@@ -1,0 +1,5 @@
+name: RythmDart
+version: 0.1.0
+dependencies:
+  unittest: any
+  petitparser: any
