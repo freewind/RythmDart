@@ -1,0 +1,15 @@
+@{
+
+      users.where((u) => u.name != 'Jeff}}}}}}}}')
+      .where((u) {
+        return u.name != '{{{John${
+      users.where((u) => u.name != """Jeff}}}}}}}}""")
+      .where((u) {
+        return u.name != '{{{John${'${user1}sdfewfewf'}';
+      })
+      .map((u) => u.name).toList()
+      }';
+      })
+      .map((u) => u.name).toList()
+
+}
