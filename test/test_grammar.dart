@@ -10,7 +10,7 @@ main() {
 
     parse(String str) => printTree(parser.start().parse(str).value);
 
-    group("args", () {
+    group("@args", () {
         test("singleLine", () {
             expect(parse("@args String name"), 'Document(\n'
             '  EntryArgs(String name)\n'
@@ -82,7 +82,30 @@ dart'''}"""), 'Document(\n'
         });
     });
 
-    group("(...)", () {
+    group("@aaa", () {
+        test("@aaa", () {
+            expect(parse("@aaa"), 'Document(\n'
+            '  RythmExpr(aaa)\n'
+            ')\n');
+        });
+        test("@aaa.bbb", () {
+            expect(parse("@aaa.bbb"), 'Document(\n'
+            '  RythmExpr(aaa.bbb)\n'
+            ')\n');
+        });
+        test("@aaa().bbb()", () {
+            expect(parse("@aaa().bbb()"), 'Document(\n'
+            '  RythmExpr(aaa().bbb())\n'
+            ')\n');
+        });
+        test("@aaa().bbb((x)=>x*x)", () {
+            expect(parse("@aaa().bbb((x)=>x*x)"), 'Document(\n'
+            '  RythmExpr(aaa().bbb((x)=>x*x))\n'
+            ')\n');
+        });
+    });
+
+    group("@(...)", () {
         test("singleLine", () {
             expect(parse('@(abc)'), 'Document(\n'
             '  RythmExpr(abc)\n'
@@ -109,7 +132,22 @@ dart'''}"""), 'Document(\n'
 
 
     group("@def", () {
-        test("def", () {
+        test("simplest", () {
+            expect(parse("@def hello() {}"), 'Document(\n'
+            '  DefFunc(hello())\n'
+            ')\n');
+        });
+        test("one param", () {
+            expect(parse("@def hello(String name) {}"), 'Document(\n'
+            '  DefFunc(hello(String name))\n'
+            ')\n');
+        });
+        test("two params", () {
+            expect(parse("@def hello(String name, int age) {}"), 'Document(\n'
+            '  DefFunc(hello(String name, int age))\n'
+            ')\n');
+        });
+        test("have body", () {
             expect(parse("""
 @def hello(String name) {
     Hello, @name
@@ -119,6 +157,37 @@ dart'''}"""), 'Document(\n'
             '    Plain(Hello, )\n'
             '    RythmExpr(name)\n'
             '    Plain(\\n)\n'
+            '  )\n'
+            ')\n');
+        });
+    });
+
+    group("@hello() withBody (...){}", () {
+        test("no params", () {
+            expect(parse("@hello() withBody { abc }"), 'Document(\n'
+            '  CallFuncWithBody(hello() withBody \n'
+            '    Plain(abc )\n'
+            '  )\n'
+            ')\n');
+        });
+        test("0 param", () {
+            expect(parse("@hello() withBody () { abc }"), 'Document(\n'
+            '  CallFuncWithBody(hello() withBody ()\n'
+            '    Plain(abc )\n'
+            '  )\n'
+            ')\n');
+        });
+        test("one param", () {
+            expect(parse("@hello() withBody (a) { abc }"), 'Document(\n'
+            '  CallFuncWithBody(hello() withBody (a)\n'
+            '    Plain(abc )\n'
+            '  )\n'
+            ')\n');
+        });
+        test("two params", () {
+            expect(parse("@hello() withBody (a , b) { abc }"), 'Document(\n'
+            '  CallFuncWithBody(hello() withBody (a, b)\n'
+            '    Plain(abc )\n'
             '  )\n'
             ')\n');
         });

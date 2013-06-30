@@ -19,6 +19,7 @@ String _tab(int level) {
 
 
 void _fixString(Node node) {
+    print("#### node: ${node}");
     List<Node> nodes = [];
     StringBuffer sb = null;
     for (final item in node.children) {

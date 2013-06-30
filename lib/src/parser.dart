@@ -43,6 +43,8 @@ class RythmParser {
 
     final AS = _token("as");
 
+    final WITH_BODY = _token("withBody");
+
 // @args String name, int age
 
     html() => any();
@@ -125,6 +127,19 @@ class RythmParser {
 
 // @aaa.bbb().ccc((r)=>r.xxx>1).ddd((x){return x>3;})
 
+    callFuncWithBody() => (
+        char('@')
+        & ref(name)
+        & ref(blockParenthesis).pick(1)
+        & WITH_BODY
+        & (
+            char('(')
+            & ref(name).separatedBy(char(',').trim(), includeSeparators:false).optional([])
+            & char(')')
+        ).pick(1).optional()
+        & ref(blockTextWithRythmExpr).pick(1)
+    ).map((each) => new CallFuncWithBody(each[1], _flatToStr(each[2]), each[4], each[5]));
+
     invocationChain() => (
         ref(invocationItem).separatedBy(char('.'), includeSeparators:false)
     );
@@ -155,6 +170,7 @@ class RythmParser {
         ref(importDirective)
         | ref(entryArgs)
         | ref(defFunc)
+        | ref(callFuncWithBody)
         | ref(ifElseIfElse)
         | ref(dartCode)
         | ref(dartExpr)

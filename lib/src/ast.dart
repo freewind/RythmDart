@@ -146,15 +146,32 @@ class Plain extends Node {
 
 
 class DefFunc extends Node {
-    String name;
+    Name name;
 
     List<ArgItem> params;
 
     DefFunc(this.name, this.params, List<Node>body) {
-        super.content = '$name(${params.map((p) => p.content).join(", ")})';
+        if (params == null) params = [];
+        super.content = '${name.content}(${params.map((p) => p.content).join(", ")})';
         super.children = body;
     }
 
+}
+
+class CallFuncWithBody extends Node {
+    Name name;
+
+    String params;
+
+    List<Name> bodyParams;
+
+    List<Node> body;
+
+    CallFuncWithBody(this.name, this.params, this.bodyParams, this.body) {
+        super.content = '${name.content}($params) withBody '
+        + (bodyParams == null ? "" : '(${bodyParams.map((p) => p.content).join(", ")})');
+        super.children = body;
+    }
 }
 
 class Name extends Node {
