@@ -107,38 +107,43 @@ dart'''}"""), 'Document(\n'
         });
     });
 
-//  group("{...}", () {
-//    test("singleLine", () {
-//      expect(parse('{abc}'), '{abc}');
-//      expect(parse('{abc{}}'), '{abc{}}');
-//      expect(parse('{abc()}'), '{abc()}');
-//    });
-//    test("multiLine", () {
-//      expect(parse('{ab\nc}'), '{ab\nc}');
-//      expect(parse('{abc{\n}}'), '{abc{\n}}');
-//      expect(parse('{abc(\n)}'), '{abc(\n)}');
-//    });
-//  });
-//
-//  group("@def", () {
-//    test("def", () {
-//      expect(parse("""
-//@def hello(String name) {
-//    Hello, @name
-//}
-//"""), """Def(hello(String name){
-//    Hello, Code(name)
-//}""");
-//    });
-//  });
 
-//	group("dartCode", () {
-//		test("has single line comment", () {
-//			expect(parse(r"@{//dwef ewf// ewf\n}"), 'Document(\n'
-//			'  DartCode(//dwef ewf// ewf\\n)\n'
-//			')\n');
-//		});
-//	});
+    group("@def", () {
+        test("def", () {
+            expect(parse("""
+@def hello(String name) {
+    Hello, @name
+}
+"""), 'Document(\n'
+            '  DefFunc(hello(String name)\n'
+            '    Plain(Hello, )\n'
+            '    RythmExpr(name)\n'
+            '    Plain(\\n)\n'
+            '  )\n'
+            ')\n');
+        });
+    });
+
+    group("dartCode", () {
+        test("simple", () {
+            expect(parse(r"@{ var x = '111'; }"), 'Document(\n'
+            '  DartCode( var x = \'111\'; )\n'
+            ')\n');
+        });
+        test("multiLine", () {
+            expect(parse("""@{
+dartString() => (
+    ref(dartStrTripleDouble)
+    | ref(dartStrTripleSingle)
+    | ref(dartStrSingle)
+    | ref(dartStrDouble)
+);
+}"""), 'Document(\n'
+            '  DartCode(\\ndartString() => (\\n    ref(dartStrTripleDouble)\\n    | ref(dartStrTripleSingle)\\n    | ref(dartStrSingle)\\n    | ref(dartStrDouble)\\n);\\n)\n'
+            ')\n');
+
+        });
+    });
 
 }
 

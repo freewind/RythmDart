@@ -65,7 +65,11 @@ class RythmParser {
         & ref(name).trim()
     ).map((each) => new ArgItem(each[0], each[1]));
 
-    paramListWithParenthesis() => char('(') & ref(paramList).optional() & char(')');
+    paramListWithParenthesis() => (
+        char('(')
+        & ref(paramList).optional()
+        & char(')')
+    );
 
 // @import "dart:xxx"
 
@@ -243,15 +247,12 @@ class RythmParser {
 
     blockTextWithRythmExpr() => (
         char('{').trim()
-        & ref(textWithRythmExpr)
+        & (
+            ref(rythmExpr)
+            | char('}').neg()
+        ).star()
         & char('}').trim()
     );
-
-    textWithRythmExpr() => (
-        ref(rythmExpr)
-        | ref(html)
-    ).star();
-
 
     Document _createDocument(List list) {
         var doc = new Document(list);

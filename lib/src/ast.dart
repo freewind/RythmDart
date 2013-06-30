@@ -148,10 +148,10 @@ class Plain extends Node {
 class DefFunc extends Node {
     String name;
 
-    String params;
+    List<ArgItem> params;
 
     DefFunc(this.name, this.params, List<Node>body) {
-        super.content = '$name($params)';
+        super.content = '$name(${params.map((p) => p.content).join(", ")})';
         super.children = body;
     }
 
