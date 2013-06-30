@@ -1,0 +1,25 @@
+@raw(user.name)
+
+@if(xx) {
+  xxx
+}
+
+@def hello() {
+    @for(val item in list) {
+        @renderBody(item)
+    }
+}
+
+@hello("xxx") withBody (item) {
+    sdfdsf
+}
+
+@{hello("xxx") withBody (item) {
+    sdfdsf
+}}
+
+@hello("xxx") withBody {
+    sdfdsf
+}
+
+@hello();

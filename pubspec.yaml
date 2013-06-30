@@ -3,3 +3,6 @@ version: 0.1.0
 dependencies:
   unittest: any
   petitparser: any
+  uuid: any
+  parsers: any
+# persistent: any

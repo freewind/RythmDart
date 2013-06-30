@@ -1,0 +1,31 @@
+@if(aaa==bbb) {
+  111
+}
+
+-------------
+
+@if(aaa==bbb) {
+  111
+} else {
+  222
+}
+
+-------------
+
+@if(aaa==bbb) {
+  111
+} else if(ccc==ddd)  {
+    222
+} else {
+  333
+}
+
+-----------
+
+@if  ( aaa=bbb   ) {
+  111
+}    else     if   ( ccc==ddd ) {
+  222
+}     else   {
+  333
+}

@@ -1,0 +1,7 @@
+@set scripts = {
+    <script src="abc.js"></script>
+}
+
+@set "go home" = {
+    Go !!
+}

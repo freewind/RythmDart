@@ -1,0 +1,5 @@
+@def hello(String name) {
+    Hello, @name
+}
+
+@hello("Freewind")

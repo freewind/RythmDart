@@ -1,0 +1,7 @@
+@get xxx
+@get "go home"
+
+@set title = "sdfdsf"
+@set x = {
+ sdfdsf
+}
