@@ -154,6 +154,12 @@ class RythmParser {
     )
     .map((each) => new Invocation(each[0], _flatToStr(each[1])));
 
+    rythmComment() => (
+        string("@*")
+        & string("*@").neg().star()
+        & string("*@")
+    ).pick(1)
+    .map((each)=> new RythmComment(each.join()));
 
 // { ... }
 
@@ -167,7 +173,8 @@ class RythmParser {
 
 
     document() => (
-        ref(importDirective)
+        ref(rythmComment)
+        | ref(importDirective)
         | ref(entryArgs)
         | ref(defFunc)
         | ref(callFuncWithBody)

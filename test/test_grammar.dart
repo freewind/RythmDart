@@ -130,6 +130,29 @@ dart'''}"""), 'Document(\n'
         });
     });
 
+    group("@* ... *@", () {
+        test("normal", () {
+            expect(parse("@* comment *@"), 'Document(\n'
+                '  RythmComment( comment )\n'
+                ')\n');
+        });
+        test("mini", () {
+            expect(parse("@**@"), 'Document(\n'
+                '  RythmComment()\n'
+                ')\n');
+        });
+        test("crazy", () {
+            expect(parse("@* ** @* ** *@"), 'Document(\n'
+                '  RythmComment( ** @* ** )\n'
+                ')\n');
+        });
+        test("multiLine", () {
+            expect(parse("@* **\n@* ** *@"), 'Document(\n'
+                '  RythmComment( **\\n@* ** )\n'
+                ')\n');
+        });
+    });
+
 
     group("@def", () {
         test("simplest", () {
