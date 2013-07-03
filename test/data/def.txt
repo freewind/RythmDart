@@ -1,5 +1,46 @@
-@def hello(String name) {
-    Hello, @name
+@def hello1() {}
+@def hello2(String name) {}
+@def hello3(String name,int age) {}
+@def hello4(
+  String name,
+  int age
+) {}
+@def hello5(String name) {
+  abcdef
+}
+@def hello6(String name) {
+  aaa @name bbb
+}
+@def hello6(String name) {
+  aaa @renderBody bbb
+}
+@def hello6(String name) {
+  aaa @renderBody(name) bbb
 }
 
-@hello("Freewind")
+----------------------------------------------------------------------
+
+Document(
+  DefFuncDirective(hello1())
+  DefFuncDirective(hello2(String name))
+  DefFuncDirective(hello3(String name, int age))
+  DefFuncDirective(hello4(String name, int age))
+  DefFuncDirective(hello5(String name)
+    Plain(  abcdef\n)
+  )
+  DefFuncDirective(hello6(String name)
+    Plain(  aaa )
+    InvocationChain(name)
+    Plain( bbb\n)
+  )
+  DefFuncDirective(hello6(String name)
+    Plain(  aaa )
+    RenderBody()
+    Plain( bbb\n)
+  )
+  DefFuncDirective(hello6(String name)
+    Plain(  aaa )
+    RenderBody(name)
+    Plain( bbb\n)
+  )
+)

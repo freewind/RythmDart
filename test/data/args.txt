@@ -1,7 +1,0 @@
-@args String who, String message
-
-<html>
-<body>
-<div>Hello, @who, @message.toLowerCase()</div>
-</body>
-</html>

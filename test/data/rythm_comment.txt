@@ -1,0 +1,34 @@
+@* *@
+@* ... *@
+@**@
+@* * @* @* @* *@
+@*
+aaa
+*@
+@*
+*********
+*@
+@*aaa.bbb.ccc()*@
+@*
+aaa.bbb.ccc()
+*@
+
+--------------------------------------------------------------
+
+Document(
+  RythmComment( )
+  Plain(\n)
+  RythmComment( ... )
+  Plain(\n)
+  RythmComment()
+  Plain(\n)
+  RythmComment( * @* @* @* )
+  Plain(\n)
+  RythmComment(\naaa\n)
+  Plain(\n)
+  RythmComment(\n*********\n)
+  Plain(\n)
+  RythmComment(aaa.bbb.ccc())
+  Plain(\n)
+  RythmComment(\naaa.bbb.ccc()\n)
+)

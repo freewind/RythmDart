@@ -1,0 +1,26 @@
+@params String name
+@params String who, String message
+@params String name, int age
+@params (String name,int age)
+@params ( String name,     int age    )
+@params (
+  String name,
+  int age
+)
+@params (
+  String name   ,
+  int age  ,
+  bool good
+)
+
+----------------------------------------------------
+
+Document(
+  EntryParamsDirective(String name)
+  EntryParamsDirective(String who, String message)
+  EntryParamsDirective(String name, int age)
+  EntryParamsDirective(String name, int age)
+  EntryParamsDirective(String name, int age)
+  EntryParamsDirective(String name, int age)
+  EntryParamsDirective(String name, int age, bool good)
+)

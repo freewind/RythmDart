@@ -1,0 +1,76 @@
+@aaa
+@aaa.bbb
+@aaa().bbb
+@aaa.bbb()
+@aaa().bbb()
+@aaa(123)
+@aaa(123).bbb(456).ccc
+@aaa.bbb().filter((c)=>c>0).ddd()
+@aaa.bbb(  ).filter(  (c)  =>  c >  0  ).ddd(  )
+@aaa.bbb().filter((c){return c>0;}).ddd()
+@aaa.bbb().filter((c){
+   return c>0;
+}).ddd()
+@aaa.bbb().filter((c){
+   // dart comment
+   return c>0;
+}).ddd()
+@aaa.bbb().filter((c){
+   // dart comment
+   return c!= "))(((()";
+}).ddd()
+@aaa.bbb().filter((c){
+   /*
+    * dart comment
+    */
+   return c!= """}{{{}{}{}{}""";
+}).ddd()
+@aaa.bbb().filter((c){
+  var ccc = "ccc";
+  "aaa${ccc.toLowerCase()}bbb"
+}).ddd()
+@aaa.bbb().filter((c){
+  """
+  (())()()({}{}{[][][{}[()"""
+}).ddd()
+@aaa.bbb().filter((c){
+  r"${"
+}).ddd()
+
+------------------------------------------------------------
+
+Document(
+  InvocationChain(aaa)
+  Plain(\n)
+  InvocationChain(aaa.bbb)
+  Plain(\n)
+  InvocationChain(aaa().bbb)
+  Plain(\n)
+  InvocationChain(aaa.bbb())
+  Plain(\n)
+  InvocationChain(aaa().bbb())
+  Plain(\n)
+  InvocationChain(aaa(123))
+  Plain(\n)
+  InvocationChain(aaa(123).bbb(456).ccc)
+  Plain(\n)
+  InvocationChain(aaa.bbb().filter((c)=>c>0).ddd())
+  Plain(\n)
+  InvocationChain(aaa.bbb(  ).filter(  (c)  =>  c >  0  ).ddd(  ))
+  Plain(\n)
+  InvocationChain(aaa.bbb().filter((c){return c>0;}).ddd())
+  Plain(\n)
+  InvocationChain(aaa.bbb().filter((c){\n   return c>0;\n}).ddd())
+  Plain(\n)
+  InvocationChain(aaa.bbb().filter((c){\n   // dart comment\n   return c>0;\n}).ddd())
+  Plain(\n)
+  InvocationChain(aaa.bbb().filter((c){\n   // dart comment\n   return c!= "))(((()";\n}).ddd())
+  Plain(\n)
+  InvocationChain(aaa.bbb().filter((c){\n   /*\n    * dart comment\n    */\n   return c!= """}{{{}{}{}{}""";\n}).ddd())
+  Plain(\n)
+  InvocationChain(aaa.bbb().filter((c){\n  var ccc = "ccc";\n  "aaa${ccc.toLowerCase()}bbb"\n}).ddd())
+  Plain(\n)
+  InvocationChain(aaa.bbb().filter((c){\n  """\n  (())()()({}{}{[][][{}[()"""\n}).ddd())
+  Plain(\n)
+  InvocationChain(aaa.bbb().filter((c){\n  r"${"\n}).ddd())
+)

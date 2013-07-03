@@ -1,0 +1,40 @@
+@{}
+@{
+}
+@{
+var s = "sss";
+}
+@{
+  var list = [1,2,3];
+  for(var item in list) {
+    print(item);
+  }
+}
+@{
+  var list = [1,2,3];
+  var s = list.filter((x)=>x>2);
+  // s is 3
+  /* you know that */
+  print(s);
+}
+@{
+  class ThisIsAClassOhGod {
+  }
+}
+@{
+var s = "sss";
+var ss = "aa${s+"xxx"}bb";
+}
+
+
+--------------------------------------------------
+
+Document(
+  DartCode()
+  DartCode()
+  DartCode(var s = "sss";\n)
+  DartCode(  var list = [1,2,3];\n  for(var item in list) {\n    print(item);\n  }\n)
+  DartCode(  var list = [1,2,3];\n  var s = list.filter((x)=>x>2);\n  // s is 3\n  /* you know that */\n  print(s);\n)
+  DartCode(  class ThisIsAClassOhGod {\n  }\n)
+  DartCode(var s = "sss";\nvar ss = "aa${s+"xxx"}bb";\n)
+)
