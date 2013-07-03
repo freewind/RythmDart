@@ -1,62 +1,59 @@
 part of rythm;
 
-
-Parser _token(String str) {
-    return string(str).trim().token();
-}
-
-whitespaceWithoutNL() => char('\n').neg().and().seq(whitespace());
-
-RefParser ref(ToParser p) => new RefParser(p);
-
 class RythmParser {
 
-    final ARGS = _token("@args");
+    final PARAMS = string("@params").trimRightInLine();
 
-    final IMPORT = _token("@import");
+    final IMPORT = string("@import").trimInLine();
 
-    final INCLUDE = _token("@include");
+    final INCLUDE = string("@include");
 
-    final IF = _token("@if");
+    final IF = string("@if").trimRightInLine();
 
-    final ELSE = _token("@else");
+    final ELSE = string("@else").trimInLine();
 
-    final BREAK = _token("@break");
+    final BREAK = string("@break");
 
-    final CONTINUE = _token("@continue");
+    final CONTINUE = string("@continue");
 
-    final DEF = _token("@def");
+    final DEF = string("@def").trimRightInLine();
 
-    final EXTENDS = _token("@extends");
+    final EXTENDS = string("@extends").trimInLine();
 
-    final RENDER_BODY = _token("@renderBody");
+    final RENDER_BODY = string("@renderBody");
 
-    final GET = _token("@get");
+    final GET = string("@get");
 
-    final SET = _token("@set");
+    final SET = string("@set");
 
-    final FOR = _token("@for");
+    final FOR = string("@for");
 
-    final VAR = _token("var");
+    final VAR = string("var");
 
-    final IN = _token("in");
+    final IN = string("in");
 
-    final AS = _token("as");
+    final AS = string("as");
 
-    final WITH_BODY = _token("withBody");
+    final WITH_BODY = string("withBody");
 
-// @args String name, int age
+    final NL = string("\n").optional("");
+
+// @params String name, int age
 
     html() => any();
 
     name() => word().plus()
     .map((each) => new Name(each.join()));
 
-    entryArgs() => (ARGS & (
-        ref(paramListWithParenthesis).pick(1)
-        | ref(paramList))
+    entryParams() => (
+        PARAMS
+        & (
+            ref(paramListWithParenthesis).pick(1)
+            | ref(paramList)
+        )
+        & NL
     ).pick(1)
-    .map((each) => new EntryArgs(each));
+    .map((each) => new EntryParamsDirective(each));
 
     paramList() => (
         ref(paramItem).separatedBy(char(','), includeSeparators:false)
@@ -65,7 +62,7 @@ class RythmParser {
     paramItem() => (
         ref(name).trim()
         & ref(name).trim()
-    ).map((each) => new ArgItem(each[0], each[1]));
+    ).map((each) => new Param(each[0], each[1]));
 
     paramListWithParenthesis() => (
         char('(')
@@ -77,18 +74,19 @@ class RythmParser {
 
     importDirective() => (
         IMPORT
-        & (char('"') & char('"').neg().star() & char('"')).trim()
+        & char('"').untilSameInLine().trimInLine()
         & (
             AS &
             ref(name)
         ).optional()
     ).pick(1)
-    .map((each) => new Import(each[0], each[1]));
+// FIXME
+    .map((each) => new ImportDirective(each[0], each[1]));
 
 // @if(...) {} else if(...) {} else {}
 
     ifElseIfElse() => (
-        ref(ifClause).separatedBy(ELSE.trim(), includeSeparators:false)
+        ref(ifClause).separatedBy(ELSE, includeSeparators:false)
         & (
             ELSE
             & ref(blockBrace).trim()
@@ -122,10 +120,25 @@ class RythmParser {
 
     extendsDirective() => (
         EXTENDS
-        & ref(name)
-    );
+        & ref(name).trim()
+        & char('(').until(')').optional([])
+    ).permute([1, 2])
+    .map((each) => new ExtendsDirective(each[0], each[1]));
 
-// @aaa.bbb().ccc((r)=>r.xxx>1).ddd((x){return x>3;})
+    namedArgItem() => (
+        ref(name)
+        & char('=')
+        & ref(simpleRythmExpr)
+    ).map((each) => new NamedArg(each[0], each[1])) ;
+
+    renderBody() => (
+        RENDER_BODY
+        & (
+            char('(')
+            & ref(name).trim().separatedBy(char(','), includeSeparators:false)
+            & char(')')
+        ).pick(1).optional()
+    ).pick(1).map((each) => new RenderBody(each));
 
     callFuncWithBody() => (
         char('@')
@@ -137,8 +150,8 @@ class RythmParser {
             & ref(name).separatedBy(char(',').trim(), includeSeparators:false).optional([])
             & char(')')
         ).pick(1).optional()
-        & ref(blockTextWithRythmExpr).pick(1)
-    ).map((each) => new CallFuncWithBody(each[1], _flatToStr(each[2]), each[4], each[5]));
+        & ref(blockTextWithRythmExpr)
+    ).map((each) => new CallFuncWithBodyDirective(each[1], _flatToStr(each[2]), each[4], each[5]));
 
     invocationChain() => (
         ref(invocationItem).separatedBy(char('.'), includeSeparators:false)
@@ -150,18 +163,15 @@ class RythmParser {
 
     invocationItem() => (
         ref(name)
-        & ref(blockParenthesis).pick(1).optional()
+        & ref(blockParenthesis).optional("")
     )
-    .map((each) => new Invocation(each[0], _flatToStr(each[1])));
+    .map((each) => new Invocation(_flatToStr(each)));
 
     rythmComment() => (
-        string("@*")
-        & string("*@").neg().star()
-        & string("*@")
+        string("@*").until("*@")
     ).pick(1)
-    .map((each)=> new RythmComment(each.join()));
+    .map((each) => new RythmComment(each.join()));
 
-// { ... }
 
     plainBlock() => char('{') & ref(plain) & char('}');
 
@@ -173,10 +183,13 @@ class RythmParser {
 
 
     document() => (
-        ref(rythmComment)
+        whitespace()
+        | ref(rythmComment)
         | ref(importDirective)
-        | ref(entryArgs)
+        | ref(extendsDirective)
+        | ref(entryParams)
         | ref(defFunc)
+        | ref(renderBody)
         | ref(callFuncWithBody)
         | ref(ifElseIfElse)
         | ref(dartCode)
@@ -188,7 +201,8 @@ class RythmParser {
 
     dartCode() => (
         char('@')
-        & ref(blockBrace).pick(1)
+        & ref(blockBrace).pick(2)
+        & NL
     ).pick(1)
     .map((each) {
         return new DartCode(_flatToStr(each));
@@ -205,7 +219,7 @@ class RythmParser {
             ) .pick(1)
         )
     ).pick(1)
-    .map((each) => new RythmExpr(each));
+    .map((each) => new InvocationChain(each));
 
     dartExpr() => (
         char(r"$")
@@ -214,14 +228,51 @@ class RythmParser {
             | (char('{') & ref(invocationChain) & char('}')).pick(1)
         )
     ).pick(1)
-    .map((each) => new DartExpr(each));
+    .map((each) => new DartEmbedExpr(each));
+
+    simpleRythmExpr() => (
+        ref(dartString)
+        | ref(invocationChain)
+        | ref(blockTextWithRythmExpr)
+// | // TODO
+    );
 
     dartString() => (
         ref(dartStrTripleDouble)
         | ref(dartStrTripleSingle)
         | ref(dartStrSingle)
         | ref(dartStrDouble)
+        | ref(dartRawString)
     );
+
+    dartRawString() => (
+        ref(dartRawStrTripleDouble)
+        | ref(dartRawStrTripleSingle)
+        | ref(dartRawStrSingle)
+        | ref(dartRawStrDouble)
+    );
+
+    dartRawStrTripleDouble() => (
+        char('r')
+        & string('"""').untilSame()
+    );
+
+    dartRawStrTripleSingle() => (
+        char('r')
+        & string("'''").untilSame()
+
+    );
+
+    dartRawStrSingle() => (
+        char('r')
+        & string("'").untilSameInLine()
+    );
+
+    dartRawStrDouble() => (
+        char('r')
+        & string('"').untilSameInLine()
+    );
+
 
     dartStrSingle() => (char("'") & (ref(dartExpr) | string(r"\'") | char("'").neg()).star() & char("'"));
 
@@ -239,13 +290,18 @@ class RythmParser {
         | char(')').neg()
     ).star() & char(')') ;
 
-    blockBrace() => char('{') & (
-        ref(dartComments)
-        | ref(dartString)
-        | ref(blockParenthesis)
-        | ref(blockBrace)
-        | char('}').neg()
-    ).star() & char('}');
+    blockBrace() => (
+        char('{')
+        & NL
+        & (
+            ref(dartComments)
+            | ref(dartString)
+            | ref(blockParenthesis)
+            | ref(blockBrace)
+            | char('}').neg()
+        ).star()
+        & char('}')
+    );
 
     dartComments() => (
         ref(dartMultiLineComment)
@@ -253,29 +309,31 @@ class RythmParser {
     );
 
     dartMultiLineComment() => (
-        string("/*") & string("*/").neg().star() & string("*/")
+        string("/*").until("*/")
     );
 
     dartSingleLineComment() => (
-        string("//") & char("\n").neg().star() & char("\n")
+        string("//").until("\n")
     );
 
     defFunc() => (
         DEF
-        & ref(name).trim()
-        & ref(paramListWithParenthesis).pick(1).trim()
-        & ref(blockTextWithRythmExpr).pick(1)
+        & ref(name).trimInLine()
+        & ref(paramListWithParenthesis).pick(1).trimInLine()
+        & ref(blockTextWithRythmExpr)
     )
-    .map((each) => new DefFunc(each[1], each[2], each[3]));
+    .map((each) => new DefFuncDirective(each[1], each[2], each[3]));
 
     blockTextWithRythmExpr() => (
-        char('{').trim()
+        char('{').trimInLine()
+        & NL
         & (
-            ref(rythmExpr)
+            ref(renderBody)
+            | ref(rythmExpr)
             | char('}').neg()
         ).star()
         & char('}').trim()
-    );
+    ).pick(2);
 
     Document _createDocument(List list) {
         var doc = new Document(list);

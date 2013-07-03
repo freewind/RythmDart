@@ -5,9 +5,11 @@ import "package:petitparser/beta.dart";
 import "dart:collection";
 import "dart:io";
 
+part "src/parsers.dart";
 part "src/parser.dart";
 part "src/ast.dart";
 part "src/compiler.dart";
+part "src/parser_extension.dart";
 
 String _tab(int level) {
     var sb = new StringBuffer();
@@ -19,7 +21,6 @@ String _tab(int level) {
 
 
 void _fixString(Node node) {
-    print("#### node: ${node}");
     List<Node> nodes = [];
     StringBuffer sb = null;
     for (final item in node.children) {
@@ -86,3 +87,9 @@ _flatToStr(list) {
     return sb . toString();
 
 }
+
+void initParserExtension() {
+    parserExtension = new ParserExtension();
+}
+
+

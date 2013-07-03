@@ -2,7 +2,6 @@ part of rythm;
 
 
 class Node {
-
     String content = "";
 
     List<Node> children = [];
@@ -18,7 +17,6 @@ class Node {
     void toCode(StringBuffer sb) => sb.write(content);
 
     toString() => content;
-
 }
 
 class Document extends Node {
@@ -44,22 +42,22 @@ class Document extends Node {
     }
 }
 
-class Import extends Node {
+class ImportDirective extends Node {
     String importPath;
 
     String as;
 
-    Import(this.importPath, this.as) {
+    ImportDirective(this.importPath, this.as) {
         super.content = importPath + (as == null ? '' : 'as $as');
     }
 }
 
-class IfElseIfElse extends Node {
+class IfElseDirective extends Node {
     List<If> ifs;
 
     RythmBlock elseClause;
 
-    IfElseIfElse(this.ifs, this.elseClause) {
+    IfElseDirective(this.ifs, this.elseClause) {
         super.children..addAll(ifs)..add(elseClause);
     }
 }
@@ -71,28 +69,29 @@ class If extends Node {
 }
 
 
-class FuncArgs extends Node {
-    List<ArgItem> args;
+class FuncParams extends Node {
+    List<Param> args;
 
-    FuncArgs(this.args) {
+    FuncParams(this.args) {
         super.content = args.map((a) => a.content).join(", ");
     }
 
 }
 
-class EntryArgs extends FuncArgs {
+class EntryParamsDirective extends FuncParams {
 
-    EntryArgs(List<ArgItem> args) :super(args);
+    EntryParamsDirective(List<Param> args) :super(args);
 
 }
 
-class RythmExpr extends Node {
+class InvocationChain extends Node {
     List<Invocation> invocations;
 
-    RythmExpr(this.invocations) {
+    InvocationChain(this.invocations) {
         super.content = invocations.map((i) => i.content).join(".");
     }
 }
+
 
 class DartCode extends Node {
 
@@ -100,22 +99,16 @@ class DartCode extends Node {
 
 }
 
-class DartExpr extends Node {
+class DartEmbedExpr extends Node {
     List<Invocation> invocations;
 
-    DartExpr(this.invocations) {
+    DartEmbedExpr(this.invocations) {
         super.content = '\${' + invocations.map((i) => i.content).join(".") + '}';
     }
 }
 
 class Invocation extends Node {
-    Name name;
-
-    String params;
-
-    Invocation(this.name, this.params) {
-        super.content = name.content + (this.params == null ? "" : '($params)');
-    }
+    Invocation(value):super.withContent(value);
 }
 
 class Plain extends Node {
@@ -145,12 +138,12 @@ class Plain extends Node {
 }
 
 
-class DefFunc extends Node {
+class DefFuncDirective extends Node {
     Name name;
 
-    List<ArgItem> params;
+    List<Param> params;
 
-    DefFunc(this.name, this.params, List<Node>body) {
+    DefFuncDirective(this.name, this.params, List<Node>body) {
         if (params == null) params = [];
         super.content = '${name.content}(${params.map((p) => p.content).join(", ")})';
         super.children = body;
@@ -158,7 +151,7 @@ class DefFunc extends Node {
 
 }
 
-class CallFuncWithBody extends Node {
+class CallFuncWithBodyDirective extends Node {
     Name name;
 
     String params;
@@ -167,7 +160,7 @@ class CallFuncWithBody extends Node {
 
     List<Node> body;
 
-    CallFuncWithBody(this.name, this.params, this.bodyParams, this.body) {
+    CallFuncWithBodyDirective(this.name, this.params, this.bodyParams, this.body) {
         super.content = '${name.content}($params) withBody '
         + (bodyParams == null ? "" : '(${bodyParams.map((p) => p.content).join(", ")})');
         super.children = body;
@@ -178,65 +171,50 @@ class Name extends Node {
     Name(String content) :super.withContent(content);
 }
 
-class FuncInvocation extends Node {
-    String funcName;
-
-    String params;
-
-    WithBody withBody;
-
-    FuncInvocation(this.funcName, this.params, this.withBody);
-
-}
-
-class WithBody extends Node {
-    String params;
-
-    WithBody(this.params, List<Node> children) {
-        super.content = this.params;
-        super.children = children;
-    }
-}
-
-class RythmComment extends Node {
-    RythmComment(String content): super.withContent(content);
-}
-
-class Extends extends Node {
+class ExtendsDirective extends Node {
     String name;
 
-    List<ArgItem> args;
+    List<NamedArg> args;
 
-    Extends(this.name, this.args) {
+    ExtendsDirective(this.name, this.args) {
         super.content = "$name(${args.map((a) => a.content).join(', ')})";
     }
 
 }
 
-class RenderBody extends Node {
-    List<Name> params;
+class NamedArg extends Node {
+    Name name;
 
-    RenderBody(this.params) {
-        super.content = params.map((a) => a.content).join(", ");
+    String value;
+
+    NamedArg(this.name, this.value) {
+        super.content = "${name.content}=$value";
     }
 }
 
-class ArgItem extends Node {
+class RenderBody extends Node {
+    List<Name> args;
+
+    RenderBody(this.args) {
+        super.content = args == null ? "" : args.map((a) => a.content).join(", ");
+    }
+}
+
+class Param extends Node {
     Name type;
 
     Name name;
 
-    ArgItem(this.type, this.name) {
+    Param(this.type, this.name) {
         super.content = '${type.content} ${name.content}';
     }
-
 }
 
-class Raw extends Node {
-    Raw(String content) : super.withContent(content);
+class RawDirective extends Node {
+    RawDirective(String content) : super.withContent(content);
 }
 
-class For extends Node {
+class ForDirective extends Node {
     Name varName;
 
     String list;
@@ -245,7 +223,7 @@ class For extends Node {
 
     RythmBlock elseClause;
 
-    For(this.varName, this.list, this.body, this.elseClause) {
+    ForDirective(this.varName, this.list, this.body, this.elseClause) {
         super.content = 'var ${varName.content} in $list';
         super.children..add(body)..add(elseClause);
     }
@@ -257,21 +235,21 @@ class RythmBlock extends Node {
 
 }
 
-class Set extends Node {
+class SetDirective extends Node {
     Name name;
 
     RythmBlock value;
 
-    Set(this.name, this.value) {
+    SetDirective(this.name, this.value) {
         super.content = name.content;
         children.add(value);
     }
 }
 
-class Get extends Node {
+class GetDirective extends Node {
     Name name;
 
-    Get(this.name) {
+    GetDirective(this.name) {
         super.content = name.content;
     }
 }
@@ -284,33 +262,42 @@ class Continue extends Node {
     Continue() : super.withContent("continue");
 }
 
-class Verbatim extends Node {
-    Verbatim(String content) : super.withContent(content);
+class VerbatimDirective extends Node {
+    VerbatimDirective(String content) : super.withContent(content);
 }
 
-class I18n extends Node {
+class I18nDirective extends Node {
     Name name;
 
-    I18n(this.name) {
+    I18nDirective(this.name) {
         super.content = name.content;
     }
 }
 
-class Url extends Node {
+class UrlDirective extends Node {
     String action;
 
-    Url(this.action) {
+    UrlDirective(this.action) {
         super.content = action;
     }
 }
 
-class Include extends Node {
+class IncludeDirective extends Node {
     String path;
 
-    Include(this.path) {
+    IncludeDirective(this.path) {
         super.content = path;
     }
 }
 
+class DartLiteral extends Node {
+    DartLiteral(value) :super.withContent(value);
+}
+
+class RythmComment extends Node {
+    RythmComment(value) :super.withContent(value);
+}
+
 class None {
 }
+

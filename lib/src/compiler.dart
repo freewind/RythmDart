@@ -20,7 +20,7 @@ String _compile(File file, Document doc) {
 
     String params() {
         var first = doc.children[0];
-        if (first is EntryArgs) {
+        if (first is EntryParamsDirective) {
             doc.children.removeAt(0);
             return first.sig();
         } else {
