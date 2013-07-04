@@ -225,6 +225,7 @@ class RythmParser {
                 char('(')
                 & ref(invocationChainWithSpaces)
                 & char(')')
+                & NL
             ) .pick(1)
         )
     ).pick(1)

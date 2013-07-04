@@ -29,12 +29,14 @@ main() {
 
     testFile("entry_params.txt");
     testFile("invocation_chain.txt");
+    testFile("invocation_chain_with_parenthesis.txt");
     testFile("rythm_comment.txt");
     testFile("def.txt");
     testFile("dart_code.txt");
     testFile("dart_comment.txt");
     testFile("dart_string.txt");
     testFile("extends.txt");
+
 
 }
 

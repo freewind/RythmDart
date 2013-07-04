@@ -1,0 +1,20 @@
+@(abc)
+@(abc())
+@(abc(()=>{return "xx";}))
+@(abc.xyz)
+@(abc())
+@(abc(()=>{return "xx";}))
+@(abc).go()
+
+------------------------------------------------------------------
+
+Document(
+  InvocationChain(abc)
+  InvocationChain(abc())
+  InvocationChain(abc(()=>{return "xx";}))
+  InvocationChain(abc.xyz)
+  InvocationChain(abc())
+  InvocationChain(abc(()=>{return "xx";}))
+  InvocationChain(abc)
+  Plain(.go())
+)
