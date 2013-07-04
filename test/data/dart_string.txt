@@ -1,0 +1,45 @@
+@{'weflwdfwe'}
+@{'wef${sss}lwdfwe'}
+@{"weflwdfwe"}
+@{"wef\${sss}lwdfwe"}
+@{"""dswf""wefwef"wefwef\${ds}
+dfsdf"""}
+@{'''hello\${ds}
+dart'''}
+@{
+'''hello\${ds}
+dart'''
+}
+@{
+"aaa ${"xxx"} bbb"
+}
+@{r'aaaa'}
+@{r"bbbb"}
+@{r'''cccc'''}
+@{r"""dddd"""}
+@{
+r"""ee
+ff"""}
+@{
+r"aaa ${xxx} bbb"
+}
+
+
+---------------
+
+Document(
+  DartCode('weflwdfwe')
+  DartCode('wef${sss}lwdfwe')
+  DartCode("weflwdfwe")
+  DartCode("wef\${sss}lwdfwe")
+  DartCode("""dswf""wefwef"wefwef\${ds}\ndfsdf""")
+  DartCode('''hello\${ds}\ndart''')
+  DartCode('''hello\${ds}\ndart'''\n)
+  DartCode("aaa ${"xxx"} bbb"\n)
+  DartCode(r'aaaa')
+  DartCode(r"bbbb")
+  DartCode(r'''cccc''')
+  DartCode(r"""dddd""")
+  DartCode(r"""ee\nff""")
+  DartCode(r"aaa ${xxx} bbb"\n)
+)

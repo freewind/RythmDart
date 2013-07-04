@@ -1,3 +1,64 @@
-@extends(main)
+@extends main
+@extends main(title="xxx")
+@extends main(title="xxx", foot="yyy")
+@extends main(title="""xxx""")
+@extends main(title={
+  <div> hello </div>
+})
+@extends main(title = {
+  <div> hello @name </div>
+})
+@extends main(title = {
+  <div> hello @name </div>
+}, foot = {
+  this is @the foot
+})
 
-@extends(main, title="xxx")
+
+----------------------------------------
+
+Document(
+  ExtendsDirective(main)
+  ExtendsDirective(main
+    NamedArg(title
+      Plain("xxx")
+    )
+  )
+  ExtendsDirective(main
+    NamedArg(title
+      Plain("xxx")
+    )
+    NamedArg(foot
+      Plain("yyy")
+    )
+  )
+  ExtendsDirective(main
+    NamedArg(title
+      Plain("""xxx""")
+    )
+  )
+  ExtendsDirective(main
+    NamedArg(title
+      Plain(  <div> hello </div>\n)
+    )
+  )
+  ExtendsDirective(main
+    NamedArg(title
+      Plain(  <div> hello )
+      InvocationChain(name)
+      Plain( </div>\n)
+    )
+  )
+  ExtendsDirective(main
+    NamedArg(title
+      Plain(  <div> hello )
+      InvocationChain(name)
+      Plain( </div>\n)
+    )
+    NamedArg(foot
+      Plain(  this is )
+      InvocationChain(the)
+      Plain( foot\n)
+    )
+  )
+)

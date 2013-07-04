@@ -121,15 +121,24 @@ class RythmParser {
     extendsDirective() => (
         EXTENDS
         & ref(name).trim()
-        & char('(').until(')').optional([])
+        & (
+            char('(')
+            & ref(namedArgItem).separatedBy(char(',').trim(), includeSeparators: false)
+            & char(')')
+            & NL
+        ).pick(1).optional([])
     ).permute([1, 2])
     .map((each) => new ExtendsDirective(each[0], each[1]));
 
     namedArgItem() => (
         ref(name)
-        & char('=')
+        & char('=').trimInLine()
         & ref(simpleRythmExpr)
-    ).map((each) => new NamedArg(each[0], each[1])) ;
+    ).map((each) {
+        var value = each[2];
+        value = value is List ? value : [value];
+        return new NamedArg(each[0], value);
+    }) ;
 
     renderBody() => (
         RENDER_BODY
@@ -243,7 +252,7 @@ class RythmParser {
         | ref(dartStrSingle)
         | ref(dartStrDouble)
         | ref(dartRawString)
-    );
+    ).flatten();
 
     dartRawString() => (
         ref(dartRawStrTripleDouble)

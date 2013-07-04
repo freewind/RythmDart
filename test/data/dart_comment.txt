@@ -1,0 +1,32 @@
+@{//dwef ewf
+}
+@{
+//dwef ewf
+// ewf
+}
+@{/*dwef* ewf// ewf*/}
+@{/**dwef* ewf// ewf*/}
+@{/**
+* dwef* ewf//
+e wf*/}
+@{
+
+// comment
+/*******************
+// comment
+comment
+********************/
+
+}
+
+------------------------------------------------------
+
+Document(
+  DartCode(//dwef ewf\n)
+  DartCode(//dwef ewf\n// ewf\n)
+  DartCode(/*dwef* ewf// ewf*/)
+  DartCode(/**dwef* ewf// ewf*/)
+  DartCode(/**\n* dwef* ewf//\ne wf*/)
+  DartCode(\n// comment\n/*******************\n// comment\ncomment\n********************/\n\n)
+)
+
