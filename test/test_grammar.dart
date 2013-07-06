@@ -42,5 +42,6 @@ main() {
     testFile("get.txt");
     testFile("set.txt");
     testFile("import.txt");
+    testFile("include.txt");
 
 }

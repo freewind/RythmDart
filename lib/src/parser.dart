@@ -214,6 +214,7 @@ class RythmParser {
         | ref(renderBody)
         | ref(getDirective)
         | ref(setDirective)
+        | ref(includeDirective)
         | ref(callFuncWithBody)
         | ref(ifElseDirective)
         | ref(forDirective)
@@ -411,6 +412,23 @@ class RythmParser {
         & NL
     ).pick(1)
     .map((each) => new SetDirective(each));
+
+    includeDirective() => (
+        INCLUDE
+        & (
+            (
+                ref(relaxedName).trimInLine()
+                & NL
+            ).pick(0)
+            |
+            (
+                char('(')
+                & (anyIn('\n)').neg()).plus()
+                & char(')')
+            ).pick(1)
+        )
+    ).pick(1)
+    .map((each) => new IncludeDirective(_flatToStr(each)));
 
     blockTextWithRythmExpr() => (
         char('{')

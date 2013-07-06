@@ -1,0 +1,9 @@
+@include aaa.json
+@include($$$.html)
+
+---------------------------------------------
+
+Document(
+  IncludeDirective(aaa.json)
+  IncludeDirective($$$.html)
+)
