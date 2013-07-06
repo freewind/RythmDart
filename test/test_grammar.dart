@@ -44,4 +44,5 @@ main() {
     testFile("import.txt");
     testFile("include.txt");
     testFile("render.txt");
+    testFile("at_at.txt");
 }

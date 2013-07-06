@@ -181,6 +181,10 @@ class RythmParser {
         }
     });
 
+    atAt() => (
+        string("@@")
+    ).map((_) => "@");
+
     callFuncWithBody() => (
         char('@')
         & ref(_callFuncWithBody)
@@ -229,6 +233,7 @@ class RythmParser {
 
     document() => (
         whitespace()
+        | ref(atAt)
         | ref(rythmComment)
         | ref(importDirective)
         | ref(extendsDirective)

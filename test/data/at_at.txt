@@ -1,0 +1,13 @@
+@@hello@@
+<div>@@abc</div>
+user@@test.com
+@verbatim {
+@@
+}
+
+------------------------
+
+Document(
+  Plain(@hello@\n<div>@abc</div>\nuser@test.com\n)
+  VerbatimDirective(@@\n)
+)
