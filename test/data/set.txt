@@ -1,7 +1,39 @@
+@set age = 123
+@set name = "Freewind"
 @set scripts = {
     <script src="abc.js"></script>
 }
-
-@set "go home" = {
-    Go !!
+@set my_name = "Freewind"
+@set my-name = "Freewind"
+@set go = {
+    Go @name !!
 }
+
+------------------------------------------
+
+Document(
+  SetDirective(age
+    Plain(123)
+  )
+  SetDirective(name
+    Plain("Freewind")
+  )
+  SetDirective(scripts
+    RythmBlock(
+      Plain(    <script src="abc.js"></script>\n)
+    )
+  )
+  SetDirective(my_name
+    Plain("Freewind")
+  )
+  SetDirective(my-name
+    Plain("Freewind")
+  )
+  SetDirective(go
+    RythmBlock(
+      Plain(    Go )
+      InvocationChain(name)
+      Plain( !!\n)
+    )
+  )
+)

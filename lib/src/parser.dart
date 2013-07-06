@@ -44,8 +44,11 @@ class RythmParser {
 
     html() => any();
 
-    name() => word().plus()
-    .map((each) => new Name(each.join()));
+    name() => word().plus().flatten()
+    .map((each) => new Name(each));
+
+    relaxedName() => (word() | char('-')).plus().flatten()
+    .map((each) => new Name(each));
 
     entryParams() => (
         PARAMS
@@ -141,14 +144,14 @@ class RythmParser {
     .map((each) => new ExtendsDirective(each[0], each[1]));
 
     namedArgItem() => (
-        ref(name)
+        ref(relaxedName)
         & char('=').trimInLine()
         & ref(simpleRythmExpr)
     ).map((each) {
         var value = each[2];
         value = value is List ? value : [value];
         return new NamedArg(each[0], value);
-    }) ;
+    });
 
     renderBody() => (
         RENDER_BODY
@@ -209,6 +212,8 @@ class RythmParser {
         | ref(entryParams)
         | ref(defFuncDirective)
         | ref(renderBody)
+        | ref(getDirective)
+        | ref(setDirective)
         | ref(callFuncWithBody)
         | ref(ifElseDirective)
         | ref(forDirective)
@@ -254,9 +259,10 @@ class RythmParser {
 
     simpleRythmExpr() => (
         ref(dartString)
+        | ref(dartNumber)
+        | ref(dartBoolean)
         | ref(invocationChain)
         | ref(blockTextWithRythmExpr)
-// | // TODO
     );
 
     dartString() => (
@@ -265,6 +271,18 @@ class RythmParser {
         | ref(dartStrSingle)
         | ref(dartStrDouble)
         | ref(dartRawString)
+    ).flatten();
+
+    dartNumber() => (
+        digit().plus()
+        & (
+            char('.')
+            & digit().plus()
+        ).optional()
+    ).flatten();
+
+    dartBoolean() => (
+        string("true") | string("false")
     ).flatten();
 
     dartRawString() => (
@@ -372,6 +390,27 @@ class RythmParser {
         )
     ).pick(1)
     .map((each) => new VerbatimDirective(_flatToStr(each)));
+
+    getDirective() => (
+        GET.trimRightInLine()
+        & (
+            (
+                char('(').trimInLine()
+// TODO how to lazy?
+                & anyIn('\n)').neg().star()
+                & char(')')
+            ).pick(1)
+            | word().plus()
+        )
+    ).pick(1)
+    .map((each) => new GetDirective(_flatToStr(each).trim()));
+
+    setDirective() => (
+        SET.trimInLine()
+        & ref(namedArgItem)
+        & NL
+    ).pick(1)
+    .map((each) => new SetDirective(each));
 
     blockTextWithRythmExpr() => (
         char('{')

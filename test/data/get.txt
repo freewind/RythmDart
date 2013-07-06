@@ -1,7 +1,26 @@
 @get xxx
-@get "go home"
+@get    xxx
+@get xxx yyy
+@get(xxx)
+@get    (  xxx   )
+@get(xxx yyy)
+@get(xxx)yyy
 
-@set title = "sdfdsf"
-@set x = {
- sdfdsf
-}
+--------------------------------
+
+Document(
+  GetDirective(xxx)
+  Plain(\n)
+  GetDirective(xxx)
+  Plain(\n)
+  GetDirective(xxx)
+  Plain( yyy\n)
+  GetDirective(xxx)
+  Plain(\n)
+  GetDirective(xxx)
+  Plain(\n)
+  GetDirective(xxx yyy)
+  Plain(\n)
+  GetDirective(xxx)
+  Plain(yyy)
+)

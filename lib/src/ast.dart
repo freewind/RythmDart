@@ -256,22 +256,15 @@ class RythmBlock extends Node {
     RythmBlock.empty(): this(null);
 }
 
-class SetDirective extends Node {
-    Name name;
-
-    RythmBlock value;
-
-    SetDirective(this.name, this.value) {
-        super.content = name.content;
-        children.add(value);
-    }
+class SetDirective extends NamedArg {
+    SetDirective(namedArg): super(namedArg.name, namedArg.value);
 }
 
 class GetDirective extends Node {
-    Name name;
+    String name;
 
     GetDirective(this.name) {
-        super.content = name.content;
+        super.content = name;
     }
 }
 

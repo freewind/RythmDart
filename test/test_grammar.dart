@@ -39,5 +39,7 @@ main() {
     testFile("if_else.txt");
     testFile("for.txt");
     testFile("verbatim.txt");
+    testFile("get.txt");
+    testFile("set.txt");
 
 }
