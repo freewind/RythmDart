@@ -9,7 +9,6 @@ part "src/parsers.dart";
 part "src/parser.dart";
 part "src/ast.dart";
 part "src/compiler.dart";
-part "src/parser_extension.dart";
 
 String _tab(int level) {
     var sb = new StringBuffer();
@@ -23,8 +22,8 @@ String _tab(int level) {
 void _fixString(Node node) {
     List<Node> nodes = [];
     StringBuffer sb = null;
-    for (final item in node.children) {
-// print("item: [$item]");
+    for (final Node item in node.children) {
+//        print("item: [$item]");
         if (item is String) {
             if (sb == null) {
                 sb = new StringBuffer(item);
@@ -87,9 +86,3 @@ _flatToStr(list) {
     return sb . toString();
 
 }
-
-void initParserExtension() {
-    parserExtension = new ParserExtension();
-}
-
-
