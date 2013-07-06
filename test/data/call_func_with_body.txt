@@ -1,7 +1,6 @@
-
 @hello() withBody {}
-@hello() withBody { abc }
-@hello() withBody () { abc }
+@hello(aaa) withBody { abc }
+@hello("aaa") withBody () { abc }
 @hello() withBody (a) { abc }
 @hello() withBody (a , b) { abc }
 @hello() withBody (a , b) {
@@ -18,12 +17,12 @@ Document(
   CallFuncWithBodyDirective(hello() withBody
     RythmBlock()
   )
-  CallFuncWithBodyDirective(hello() withBody
+  CallFuncWithBodyDirective(hello(aaa) withBody
     RythmBlock(
       Plain( abc )
     )
   )
-  CallFuncWithBodyDirective(hello() withBody ()
+  CallFuncWithBodyDirective(hello("aaa") withBody ()
     RythmBlock(
       Plain( abc )
     )
