@@ -1,0 +1,79 @@
+@render hello()
+@render hello(aaa)
+@render hello("aaa")
+@render hello() withBody {}
+@render hello(aaa) withBody { abc }
+@render hello("aaa") withBody () { abc }
+@render hello() withBody (a) { abc }
+@render hello() withBody (a , b) { abc }
+@render hello() withBody (a , b) {
+  abc
+}
+@render hello() withBody (a , b) {
+  hello, @a, @b
+}
+
+----------------------------------------------------
+
+Document(
+  RenderDirective(
+    InvocationChain(hello())
+  )
+  RenderDirective(
+    InvocationChain(hello(aaa))
+  )
+  RenderDirective(
+    InvocationChain(hello("aaa"))
+  )
+  RenderDirective(
+    CallFuncWithBodyDirective(hello() withBody
+      RythmBlock()
+    )
+  )
+  RenderDirective(
+    CallFuncWithBodyDirective(hello(aaa) withBody
+      RythmBlock(
+        Plain( abc )
+      )
+    )
+  )
+  RenderDirective(
+    CallFuncWithBodyDirective(hello("aaa") withBody ()
+      RythmBlock(
+        Plain( abc )
+      )
+    )
+  )
+  RenderDirective(
+    CallFuncWithBodyDirective(hello() withBody (a)
+      RythmBlock(
+        Plain( abc )
+      )
+    )
+  )
+  RenderDirective(
+    CallFuncWithBodyDirective(hello() withBody (a, b)
+      RythmBlock(
+        Plain( abc )
+      )
+    )
+  )
+  RenderDirective(
+    CallFuncWithBodyDirective(hello() withBody (a, b)
+      RythmBlock(
+        Plain(  abc\n)
+      )
+    )
+  )
+  RenderDirective(
+    CallFuncWithBodyDirective(hello() withBody (a, b)
+      RythmBlock(
+        Plain(  hello, )
+        InvocationChain(a)
+        Plain(, )
+        InvocationChain(b)
+        Plain(\n)
+      )
+    )
+  )
+)

@@ -43,5 +43,5 @@ main() {
     testFile("set.txt");
     testFile("import.txt");
     testFile("include.txt");
-
+    testFile("render.txt");
 }

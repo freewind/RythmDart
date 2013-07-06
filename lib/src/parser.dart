@@ -8,6 +8,8 @@ class RythmParser {
 
     final INCLUDE = string("@include");
 
+    final RENDER = string("@render");
+
     final IF = string("@if").trimRightInLine();
 
     final ELSE = string("else").trimInLine();
@@ -162,9 +164,30 @@ class RythmParser {
         ).pick(1).optional()
     ).pick(1).map((each) => new RenderBody(each));
 
+    renderDirective() => (
+        RENDER.trimRightInLine()
+        &
+        (
+            ref(_callFuncWithBody)
+            | ref(invocationChain)
+        )
+        & NL
+    ).pick(1)
+    .map((each) {
+        if (each is List) {
+            return new RenderDirective(new InvocationChain(each));
+        } else {
+            return new RenderDirective.callWithBody(each);
+        }
+    });
+
     callFuncWithBody() => (
         char('@')
-        & ref(name)
+        & ref(_callFuncWithBody)
+    ).pick(1);
+
+    _callFuncWithBody() => (
+        ref(name)
         & ref(blockParenthesis).pick(1)
         & WITH_BODY.trimInLine()
         & (
@@ -173,7 +196,7 @@ class RythmParser {
             & char(')').trimInLine()
         ).pick(1).optional()
         & ref(blockTextWithRythmExpr)
-    ).map((each) => new CallFuncWithBodyDirective(each[1], _flatToStr(each[2]), each[4], each[5]));
+    ).map((each) => new CallFuncWithBodyDirective(each[0], _flatToStr(each[1]), each[3], each[4]));
 
     invocationChain() => (
         ref(invocationItem).separatedBy(char('.'), includeSeparators:false)
@@ -210,11 +233,13 @@ class RythmParser {
         | ref(importDirective)
         | ref(extendsDirective)
         | ref(entryParams)
+        | ref(renderDirective)
         | ref(defFuncDirective)
         | ref(renderBody)
         | ref(getDirective)
         | ref(setDirective)
         | ref(includeDirective)
+        | ref(renderDirective)
         | ref(callFuncWithBody)
         | ref(ifElseDirective)
         | ref(forDirective)

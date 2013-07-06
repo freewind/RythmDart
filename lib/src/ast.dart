@@ -213,6 +213,12 @@ class RenderBody extends Node {
     }
 }
 
+class RenderDirective extends Node {
+    RenderDirective(InvocationChain chain) :super.withChildren([chain]);
+
+    RenderDirective.callWithBody(CallFuncWithBodyDirective callFunc) :super.withChildren([callFunc]);
+}
+
 class Param extends Node {
     Name type;
 
