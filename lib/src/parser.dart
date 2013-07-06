@@ -28,6 +28,8 @@ class RythmParser {
 
     final FOR = string("@for");
 
+    final VERBATIM = string("@verbatim");
+
     final VAR = string("var");
 
     final IN = string("in");
@@ -210,6 +212,7 @@ class RythmParser {
         | ref(callFuncWithBody)
         | ref(ifElseDirective)
         | ref(forDirective)
+        | ref(verbatimDirective)
         | ref(dartCode)
         | ref(dartExpr)
         | ref(rythmExpr)
@@ -347,6 +350,29 @@ class RythmParser {
 
     continueKeyword() => CONTINUE.map((_) => new Continue());
 
+    verbatimDirective() => (
+        VERBATIM &
+        (
+            (
+                char('{').trimInLine()
+                & char("\n")
+                & (
+                    string("\n}").neg().star()
+                )
+                & char('\n')
+                & char("}")
+                & NL
+            ).permute([2, 3])
+            | (
+                char('{').trimLeftInLine()
+                & anyIn('\n}').neg().star()
+                & char('}')
+                & NL.optional()
+            ).pick(1)
+        )
+    ).pick(1)
+    .map((each) => new VerbatimDirective(_flatToStr(each)));
+
     blockTextWithRythmExpr() => (
         char('{')
         & (
@@ -359,6 +385,7 @@ class RythmParser {
             | ref(ifElseDirective)
             | ref(breakKeyword)
             | ref(continueKeyword)
+            | ref(verbatimDirective)
             | ref(rythmExpr)
             | char('}').neg()
         ).star()

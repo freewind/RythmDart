@@ -1,0 +1,24 @@
+@verbatim {}
+@verbatim {
+abc
+}
+@verbatim {
+@abc
+}
+@verbatim {
+  @verbatim {
+  }
+}
+@verbatim {
+  @extends main
+}
+
+--------------------
+
+Document(
+  VerbatimDirective()
+  VerbatimDirective(abc\n)
+  VerbatimDirective(@abc\n)
+  VerbatimDirective(  @verbatim {\n  }\n)
+  VerbatimDirective(  @extends main\n)
+)

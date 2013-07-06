@@ -38,5 +38,6 @@ main() {
     testFile("call_func_with_body.txt");
     testFile("if_else.txt");
     testFile("for.txt");
+    testFile("verbatim.txt");
 
 }
