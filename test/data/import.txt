@@ -1,2 +1,11 @@
 @import "dart:collection"
 @import "packages:unittest/unittest.dart"
+@import "packages:unittest/unittest.dart" as unit
+
+--------------------------------
+
+Document(
+  ImportDirective("dart:collection")
+  ImportDirective("packages:unittest/unittest.dart")
+  ImportDirective("packages:unittest/unittest.dart" as unit)
+)

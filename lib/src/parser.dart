@@ -79,14 +79,14 @@ class RythmParser {
 
     importDirective() => (
         IMPORT
-        & char('"').untilSameInLine().trimInLine()
+        & char('"').untilSameInLine().trimInLine().flatten()
         & (
-            AS &
+            AS.trimInLine() &
             ref(name)
-        ).optional()
-    ).pick(1)
-// FIXME
-    .map((each) => new ImportDirective(each[0], each[1]));
+        ).pick(1).optional()
+        & NL
+    ).permute([1, 2])
+    .map((each) => new ImportDirective(each[0], each[1] == null ? null : each[1].content));
 
 // @if(...) {} else if(...) {} else {}
 

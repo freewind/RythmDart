@@ -41,5 +41,6 @@ main() {
     testFile("verbatim.txt");
     testFile("get.txt");
     testFile("set.txt");
+    testFile("import.txt");
 
 }
