@@ -5,6 +5,7 @@
 }
 @set my_name = "Freewind"
 @set my-name = "Freewind"
+@set my.name = "Freewind"
 @set go = {
     Go @name !!
 }
@@ -27,6 +28,9 @@ Document(
     Plain("Freewind")
   )
   SetDirective(my-name
+    Plain("Freewind")
+  )
+  SetDirective(my.name
     Plain("Freewind")
   )
   SetDirective(go

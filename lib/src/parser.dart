@@ -47,7 +47,7 @@ class RythmParser {
     name() => word().plus().flatten()
     .map((each) => new Name(each));
 
-    relaxedName() => (word() | char('-')).plus().flatten()
+    relaxedName() => (word() | anyIn('-.')).plus().flatten()
     .map((each) => new Name(each));
 
     entryParams() => (
