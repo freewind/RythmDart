@@ -6,8 +6,6 @@ import "dart:io";
 
 main() {
 
-    initParserExtension();
-
     final _parser = new RythmParser();
 
     _parse(String str) => printTree(_parser.start().parse(str).value);
@@ -27,6 +25,7 @@ main() {
         });
     }
 
+
     testFile("entry_params.txt");
     testFile("invocation_chain.txt");
     testFile("invocation_chain_with_parenthesis.txt");
@@ -37,5 +36,7 @@ main() {
     testFile("dart_string.txt");
     testFile("extends.txt");
     testFile("call_func_with_body.txt");
+    testFile("if_else.txt");
+    testFile("for.txt");
 
 }

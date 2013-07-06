@@ -39,26 +39,34 @@ Document(
   )
   ExtendsDirective(main
     NamedArg(title
-      Plain(  <div> hello </div>\n)
+      RythmBlock(
+        Plain(  <div> hello </div>\n)
+      )
     )
   )
   ExtendsDirective(main
     NamedArg(title
-      Plain(  <div> hello )
-      InvocationChain(name)
-      Plain( </div>\n)
+      RythmBlock(
+        Plain(  <div> hello )
+        InvocationChain(name)
+        Plain( </div>\n)
+      )
     )
   )
   ExtendsDirective(main
     NamedArg(title
-      Plain(  <div> hello )
-      InvocationChain(name)
-      Plain( </div>\n)
+      RythmBlock(
+        Plain(  <div> hello )
+        InvocationChain(name)
+        Plain( </div>\n)
+      )
     )
     NamedArg(foot
-      Plain(  this is )
-      InvocationChain(the)
-      Plain( foot\n)
+      RythmBlock(
+        Plain(  this is )
+        InvocationChain(the)
+        Plain( foot\n)
+      )
     )
   )
 )

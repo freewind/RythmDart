@@ -10,7 +10,7 @@ class RythmParser {
 
     final IF = string("@if").trimRightInLine();
 
-    final ELSE = string("@else").trimInLine();
+    final ELSE = string("else").trimInLine();
 
     final BREAK = string("@break");
 
@@ -85,38 +85,46 @@ class RythmParser {
 
 // @if(...) {} else if(...) {} else {}
 
-    ifElseIfElse() => (
-        ref(ifClause).separatedBy(ELSE, includeSeparators:false)
-        & (
-            ELSE
-            & ref(blockBrace).trim()
-        ).optional()
-    );
+    ifElseDirective() => (
+        IF &
+        ref(ifClause).separatedBy(
+            (ELSE.trimInLine() & string("if").trimInLine()),
+            includeSeparators:false)
+        &
+        (
+            ELSE.trimInLine()
+            & ref(blockTextWithRythmExpr).trimInLine()
+        ).pick(1).optional()
+    ).permute([1, 2])
+    .map((each) => new IfElseDirective(each[0], each[1] == null ? null : each[1]));
 
     ifClause() => (
-        IF
-        & ref(blockParenthesis).pick(1).trim()
-        & ref(blockBrace).trim()
-    );
+        ref(blockParenthesis).pick(1).trimInLine()
+        & ref(blockTextWithRythmExpr).trimInLine()
+    )
+    .map((each) => new If(_flatToStr(each[0]), each[1]));
 
     forDirective() => (
         FOR
-        & char('(')
-        & ref(forClause)
-        & char(')')
+        & (
+            char('(')
+            & ref(forClause)
+            & char(')')
+        ).trimInLine().pick(1)
         & ref(blockTextWithRythmExpr)
         & (
             ELSE
             & ref(blockTextWithRythmExpr)
-        )
-    );
+        ).pick(1).optional()
+    ).permute([1, 2, 3])
+    .map((each) => new ForDirective(each[0][0], each[0][1], each[1], each[2]));
 
     forClause() => (
-        VAR
+        VAR.trimInLine()
         & ref(name)
-        & IN
-        & ref(invocationChain)
-    );
+        & IN.trimInLine()
+        & ref(invocationChain).flatten()
+    ).permute([1, 3]);
 
     extendsDirective() => (
         EXTENDS
@@ -177,7 +185,7 @@ class RythmParser {
     .map((each) => new Invocation(_flatToStr(each)));
 
     rythmComment() => (
-        string("@*").until("*@")
+        string("@*").untilString("*@")
     ).pick(1)
     .map((each) => new RythmComment(each.join()));
 
@@ -197,10 +205,11 @@ class RythmParser {
         | ref(importDirective)
         | ref(extendsDirective)
         | ref(entryParams)
-        | ref(defFunc)
+        | ref(defFuncDirective)
         | ref(renderBody)
         | ref(callFuncWithBody)
-        | ref(ifElseIfElse)
+        | ref(ifElseDirective)
+        | ref(forDirective)
         | ref(dartCode)
         | ref(dartExpr)
         | ref(rythmExpr)
@@ -319,20 +328,24 @@ class RythmParser {
     );
 
     dartMultiLineComment() => (
-        string("/*").until("*/")
+        string("/*").untilString("*/")
     );
 
     dartSingleLineComment() => (
-        string("//").until("\n")
+        string("//").untilChar("\n")
     );
 
-    defFunc() => (
+    defFuncDirective() => (
         DEF
         & ref(name).trimInLine()
         & ref(paramListWithParenthesis).pick(1).trimInLine()
         & ref(blockTextWithRythmExpr)
     )
     .map((each) => new DefFuncDirective(each[1], each[2], each[3]));
+
+    breakKeyword() => BREAK.map((_) => new Break());
+
+    continueKeyword() => CONTINUE.map((_) => new Continue());
 
     blockTextWithRythmExpr() => (
         char('{')
@@ -342,11 +355,16 @@ class RythmParser {
         ).optional()
         & (
             ref(renderBody)
+            | ref(forDirective)
+            | ref(ifElseDirective)
+            | ref(breakKeyword)
+            | ref(continueKeyword)
             | ref(rythmExpr)
             | char('}').neg()
         ).star()
         & char('}').trim()
-    ).pick(2);
+    ).pick(2)
+    .map((each) => new RythmBlock(each == null ? [] : each));
 
     Document _createDocument(List list) {
         var doc = new Document(list);

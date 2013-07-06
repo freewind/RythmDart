@@ -1,15 +1,68 @@
 @for(var x in list) {
   @x
 }
-
-@for(x in list) {
+@for(var x in list) {
   @x
 }
-
-@for(x in list) {
+@for(var x in list) {
     @if(x>3) {
         @continue
     } else {
         @break
     }
 }
+@for(var x in list) {
+  @x
+}   else  {
+  Hello, @else
+}
+
+------------------------------------------------------------
+
+Document(
+  ForDirective(var x in list
+    RythmBlock(
+      Plain(  )
+      InvocationChain(x)
+      Plain(\n)
+    )
+  )
+  ForDirective(var x in list
+    RythmBlock(
+      Plain(  )
+      InvocationChain(x)
+      Plain(\n)
+    )
+  )
+  ForDirective(var x in list
+    RythmBlock(
+      Plain(    )
+      IfElseDirective(
+        If(x>3
+          RythmBlock(
+            Plain(        )
+            Continue(continue)
+            Plain(\n    )
+          )
+        )
+        RythmBlock(
+          Plain(        )
+          Break(break)
+          Plain(\n    )
+        )
+      )
+    )
+  )
+  ForDirective(var x in list
+    RythmBlock(
+      Plain(  )
+      InvocationChain(x)
+      Plain(\n)
+    )
+    RythmBlock(
+      Plain(  Hello, )
+      InvocationChain(else)
+      Plain(\n)
+    )
+  )
+)

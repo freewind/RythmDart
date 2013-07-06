@@ -15,27 +15,41 @@
 ----------------------------------------------------
 
 Document(
-  CallFuncWithBodyDirective(hello() withBody )
-  CallFuncWithBodyDirective(hello() withBody 
-    Plain( abc )
+  CallFuncWithBodyDirective(hello() withBody
+    RythmBlock()
+  )
+  CallFuncWithBodyDirective(hello() withBody
+    RythmBlock(
+      Plain( abc )
+    )
   )
   CallFuncWithBodyDirective(hello() withBody ()
-    Plain( abc )
+    RythmBlock(
+      Plain( abc )
+    )
   )
   CallFuncWithBodyDirective(hello() withBody (a)
-    Plain( abc )
+    RythmBlock(
+      Plain( abc )
+    )
   )
   CallFuncWithBodyDirective(hello() withBody (a, b)
-    Plain( abc )
+    RythmBlock(
+      Plain( abc )
+    )
   )
   CallFuncWithBodyDirective(hello() withBody (a, b)
-    Plain(  abc\n)
+    RythmBlock(
+      Plain(  abc\n)
+    )
   )
   CallFuncWithBodyDirective(hello() withBody (a, b)
-    Plain(  hello, )
-    InvocationChain(a)
-    Plain(, )
-    InvocationChain(b)
-    Plain(\n)
+    RythmBlock(
+      Plain(  hello, )
+      InvocationChain(a)
+      Plain(, )
+      InvocationChain(b)
+      Plain(\n)
+    )
   )
 )

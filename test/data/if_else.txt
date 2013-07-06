@@ -1,17 +1,12 @@
+@if(aaa==bbb) {}
 @if(aaa==bbb) {
   111
 }
-
--------------
-
 @if(aaa==bbb) {
   111
 } else {
   222
 }
-
--------------
-
 @if(aaa==bbb) {
   111
 } else if(ccc==ddd)  {
@@ -19,9 +14,6 @@
 } else {
   333
 }
-
------------
-
 @if  ( aaa=bbb   ) {
   111
 }    else     if   ( ccc==ddd ) {
@@ -29,3 +21,89 @@
 }     else   {
   333
 }
+@if  ( aaa=bbb   ) {
+  111 @aaa
+}    else     if   ( ccc==ddd ) {
+  222 @bbb
+}     else   {
+  333 @ccc
+}
+
+--------------------------------------------------------
+
+
+Document(
+  IfElseDirective(
+    If(aaa==bbb
+      RythmBlock()
+    )
+  )
+  IfElseDirective(
+    If(aaa==bbb
+      RythmBlock(
+        Plain(  111\n)
+      )
+    )
+  )
+  IfElseDirective(
+    If(aaa==bbb
+      RythmBlock(
+        Plain(  111\n)
+      )
+    )
+    RythmBlock(
+      Plain(  222\n)
+    )
+  )
+  IfElseDirective(
+    If(aaa==bbb
+      RythmBlock(
+        Plain(  111\n)
+      )
+    )
+    If(ccc==ddd
+      RythmBlock(
+        Plain(    222\n)
+      )
+    )
+    RythmBlock(
+      Plain(  333\n)
+    )
+  )
+  IfElseDirective(
+    If(aaa=bbb
+      RythmBlock(
+        Plain(  111\n)
+      )
+    )
+    If(ccc==ddd
+      RythmBlock(
+        Plain(  222\n)
+      )
+    )
+    RythmBlock(
+      Plain(  333\n)
+    )
+  )
+  IfElseDirective(
+    If(aaa=bbb
+      RythmBlock(
+        Plain(  111 )
+        InvocationChain(aaa)
+        Plain(\n)
+      )
+    )
+    If(ccc==ddd
+      RythmBlock(
+        Plain(  222 )
+        InvocationChain(bbb)
+        Plain(\n)
+      )
+    )
+    RythmBlock(
+      Plain(  333 )
+      InvocationChain(ccc)
+      Plain(\n)
+    )
+  )
+)

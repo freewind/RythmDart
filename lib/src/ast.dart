@@ -58,14 +58,23 @@ class IfElseDirective extends Node {
     RythmBlock elseClause;
 
     IfElseDirective(this.ifs, this.elseClause) {
-        super.children..addAll(ifs)..add(elseClause);
+        super.children..addAll(ifs);
+        if (elseClause != null) {
+            super.children.add(elseClause);
+        }
     }
 }
 
 class If extends Node {
     String condition;
 
-    If(this.condition, List<Node> children) : super.withChildren(children);
+    RythmBlock body;
+
+    If(_condition, this.body) {
+        this.condition = _condition.trim();
+        super.content = this.condition;
+        super.children = [body];
+    }
 }
 
 
@@ -143,10 +152,12 @@ class DefFuncDirective extends Node {
 
     List<Param> params;
 
-    DefFuncDirective(this.name, this.params, List<Node>body) {
+    RythmBlock body;
+
+    DefFuncDirective(this.name, this.params, this.body) {
         if (params == null) params = [];
         super.content = '${name.content}(${params.map((p) => p.content).join(", ")})';
-        super.children = body;
+        super.children = [body];
     }
 
 }
@@ -158,12 +169,12 @@ class CallFuncWithBodyDirective extends Node {
 
     List<Name> bodyParams;
 
-    List<Node> body;
+    RythmBlock body;
 
     CallFuncWithBodyDirective(this.name, this.params, this.bodyParams, this.body) {
-        super.content = '${name.content}($params) withBody '
-        + (bodyParams == null ? "" : '(${bodyParams.map((p) => p.content).join(", ")})');
-        super.children = body;
+        super.content = '${name.content}($params) withBody'
+        + (bodyParams == null ? "" : ' (${bodyParams.map((p) => p.content).join(", ")})');
+        super.children = [body];
     }
 }
 
@@ -227,14 +238,22 @@ class ForDirective extends Node {
 
     ForDirective(this.varName, this.list, this.body, this.elseClause) {
         super.content = 'var ${varName.content} in $list';
-        super.children..add(body)..add(elseClause);
+        super.children..add(body);
+        if (this.elseClause != null) {
+            super.children.add(elseClause);
+        }
     }
 }
 
 class RythmBlock extends Node {
 
-    RythmBlock(List<Node> children) :super.withChildren(children);
+    RythmBlock(List<Node> children) {
+        if (children != null && !children.isEmpty) {
+            super.children = children;
+        }
+    }
 
+    RythmBlock.empty(): this(null);
 }
 
 class SetDirective extends Node {
@@ -300,6 +319,6 @@ class RythmComment extends Node {
     RythmComment(value) :super.withContent(value);
 }
 
-class None {
+class None extends Node {
 }
 
