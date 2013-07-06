@@ -25,6 +25,14 @@ var s = "sss";
 var s = "sss";
 var ss = "aa${s+"xxx"}bb";
 }
+@{
+dartString() => (
+    ref(dartStrTripleDouble)
+    | ref(dartStrTripleSingle)
+    | ref(dartStrSingle)
+    | ref(dartStrDouble)
+);
+}
 
 
 --------------------------------------------------
@@ -37,4 +45,5 @@ Document(
   DartCode(  var list = [1,2,3];\n  var s = list.filter((x)=>x>2);\n  // s is 3\n  /* you know that */\n  print(s);\n)
   DartCode(  class ThisIsAClassOhGod {\n  }\n)
   DartCode(var s = "sss";\nvar ss = "aa${s+"xxx"}bb";\n)
+  DartCode(dartString() => (\n    ref(dartStrTripleDouble)\n    | ref(dartStrTripleSingle)\n    | ref(dartStrSingle)\n    | ref(dartStrDouble)\n);\n)
 )
