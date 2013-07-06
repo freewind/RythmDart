@@ -153,11 +153,11 @@ class RythmParser {
         char('@')
         & ref(name)
         & ref(blockParenthesis).pick(1)
-        & WITH_BODY
+        & WITH_BODY.trimInLine()
         & (
             char('(')
             & ref(name).separatedBy(char(',').trim(), includeSeparators:false).optional([])
-            & char(')')
+            & char(')').trimInLine()
         ).pick(1).optional()
         & ref(blockTextWithRythmExpr)
     ).map((each) => new CallFuncWithBodyDirective(each[1], _flatToStr(each[2]), each[4], each[5]));
@@ -335,8 +335,11 @@ class RythmParser {
     .map((each) => new DefFuncDirective(each[1], each[2], each[3]));
 
     blockTextWithRythmExpr() => (
-        char('{').trimInLine()
-        & NL
+        char('{')
+        & (
+            whitespaceInLine().star()
+            & char("\n")
+        ).optional()
         & (
             ref(renderBody)
             | ref(rythmExpr)

@@ -36,8 +36,6 @@ main() {
     testFile("dart_comment.txt");
     testFile("dart_string.txt");
     testFile("extends.txt");
-
+    testFile("call_func_with_body.txt");
 
 }
-
-

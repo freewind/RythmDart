@@ -1,0 +1,41 @@
+
+@hello() withBody {}
+@hello() withBody { abc }
+@hello() withBody () { abc }
+@hello() withBody (a) { abc }
+@hello() withBody (a , b) { abc }
+@hello() withBody (a , b) {
+  abc
+}
+@hello() withBody (a , b) {
+  hello, @a, @b
+}
+
+
+----------------------------------------------------
+
+Document(
+  CallFuncWithBodyDirective(hello() withBody )
+  CallFuncWithBodyDirective(hello() withBody 
+    Plain( abc )
+  )
+  CallFuncWithBodyDirective(hello() withBody ()
+    Plain( abc )
+  )
+  CallFuncWithBodyDirective(hello() withBody (a)
+    Plain( abc )
+  )
+  CallFuncWithBodyDirective(hello() withBody (a, b)
+    Plain( abc )
+  )
+  CallFuncWithBodyDirective(hello() withBody (a, b)
+    Plain(  abc\n)
+  )
+  CallFuncWithBodyDirective(hello() withBody (a, b)
+    Plain(  hello, )
+    InvocationChain(a)
+    Plain(, )
+    InvocationChain(b)
+    Plain(\n)
+  )
+)
