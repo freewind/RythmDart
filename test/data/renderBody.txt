@@ -1,5 +1,23 @@
-<html>
-    <body>
-        @renderBody
-    </body>
-</html>
+@renderBody
+@renderBody()
+@renderBody(a)
+@renderBody(a,b)
+<div>@renderBody</div>
+<div>@renderBody()</div>
+<div>@renderBody(a)</div>
+
+--------------------------------
+
+Document(
+  RenderBody()
+  RenderBody()
+  RenderBody(a)
+  RenderBody(a, b)
+  Plain(<div>)
+  RenderBody()
+  Plain(</div>\n<div>)
+  RenderBody()
+  Plain(</div>\n<div>)
+  RenderBody(a)
+  Plain(</div>)
+)

@@ -45,4 +45,6 @@ main() {
     testFile("include.txt");
     testFile("render.txt");
     testFile("at_at.txt");
+    testFile("renderBody.txt");
+    testFile("should_not.txt");
 }
