@@ -2,48 +2,6 @@ part of rythm;
 
 class RythmParser {
 
-    final PARAMS = string("@params").trimRightInLine();
-
-    final IMPORT = string("@import").trimInLine();
-
-    final INCLUDE = string("@include");
-
-    final RENDER = string("@render");
-
-    final IF = string("@if").trimRightInLine();
-
-    final ELSE = string("else").trimInLine();
-
-    final BREAK = string("@break");
-
-    final CONTINUE = string("@continue");
-
-    final DEF = string("@def").trimRightInLine();
-
-    final EXTENDS = string("@extends").trimInLine();
-
-    final RENDER_BODY = string("@renderBody");
-
-    final GET = string("@get");
-
-    final SET = string("@set");
-
-    final FOR = string("@for");
-
-    final VERBATIM = string("@verbatim");
-
-    final VAR = string("var");
-
-    final IN = string("in");
-
-    final AS = string("as");
-
-    final WITH_BODY = string("withBody");
-
-    final NL = string("\n").optional("");
-
-// @params String name, int age
-
     html() => any();
 
     name() => word().plus().flatten()
@@ -53,12 +11,12 @@ class RythmParser {
     .map((each) => new Name(each));
 
     entryParams() => (
-        PARAMS
+        string("@params").trimRightInLine()
         & (
             ref(paramListWithParenthesis).pick(1)
             | ref(paramList)
         )
-        & NL
+        & string("\n").optional("")
     ).pick(1)
     .map((each) => new EntryParamsDirective(each));
 
@@ -77,29 +35,25 @@ class RythmParser {
         & char(')')
     );
 
-// @import "dart:xxx"
-
     importDirective() => (
-        IMPORT
+        string("@import").trimInLine()
         & char('"').untilSameInLine().trimInLine().flatten()
         & (
-            AS.trimInLine() &
+            string("as").trimInLine() &
             ref(name)
         ).pick(1).optional()
-        & NL
+        & string("\n").optional("")
     ).permute([1, 2])
     .map((each) => new ImportDirective(each[0], each[1] == null ? null : each[1].content));
 
-// @if(...) {} else if(...) {} else {}
-
     ifElseDirective() => (
-        IF &
+        string("@if").trimRightInLine() &
         ref(ifClause).separatedBy(
-            (ELSE.trimInLine() & string("if").trimInLine()),
+            (string("else").trimInLine().trimInLine() & string("if").trimInLine()),
             includeSeparators:false)
         &
         (
-            ELSE.trimInLine()
+            string("else").trimInLine().trimInLine()
             & ref(blockTextWithRythmExpr).trimInLine()
         ).pick(1).optional()
     ).permute([1, 2])
@@ -112,7 +66,7 @@ class RythmParser {
     .map((each) => new If(_flatToStr(each[0]), each[1]));
 
     forDirective() => (
-        FOR
+        string("@for")
         & (
             char('(')
             & ref(forClause)
@@ -120,27 +74,27 @@ class RythmParser {
         ).trimInLine().pick(1)
         & ref(blockTextWithRythmExpr)
         & (
-            ELSE
+            string("else").trimInLine()
             & ref(blockTextWithRythmExpr)
         ).pick(1).optional()
     ).permute([1, 2, 3])
     .map((each) => new ForDirective(each[0][0], each[0][1], each[1], each[2]));
 
     forClause() => (
-        VAR.trimInLine()
+        string("var").trimInLine()
         & ref(name)
-        & IN.trimInLine()
+        & string("in").trimInLine()
         & ref(invocationChain).flatten()
     ).permute([1, 3]);
 
     extendsDirective() => (
-        EXTENDS
+        string("@extends").trimInLine()
         & ref(name).trim()
         & (
             char('(')
             & ref(namedArgItem).separatedBy(char(',').trim(), includeSeparators: false)
             & char(')')
-            & NL
+            & string("\n").optional("")
         ).pick(1).optional([])
     ).permute([1, 2])
     .map((each) => new ExtendsDirective(each[0], each[1]));
@@ -198,7 +152,7 @@ class RythmParser {
     _callFuncWithBody() => (
         ref(name)
         & ref(blockParenthesis).pick(1)
-        & WITH_BODY.trimInLine()
+        & string("withBody").trimInLine()
         & (
             char('(')
             & ref(name).separatedBy(char(',').trim(), includeSeparators:false).optional([])
@@ -243,9 +197,9 @@ class RythmParser {
         | ref(importDirective)
         | ref(extendsDirective)
         | ref(entryParams)
+        | ref(renderBody)
         | ref(renderDirective)
         | ref(defFuncDirective)
-        | ref(renderBody)
         | ref(getDirective)
         | ref(setDirective)
         | ref(includeDirective)
@@ -264,7 +218,7 @@ class RythmParser {
     dartCode() => (
         char('@')
         & ref(blockBrace).pick(2)
-        & NL
+        & string("\n").optional("")
     ).pick(1)
     .map((each) {
         return new DartCode(_flatToStr(each));
@@ -278,7 +232,7 @@ class RythmParser {
                 char('(')
                 & ref(invocationChainWithSpaces)
                 & char(')')
-                & NL
+                & string("\n").optional("")
             ) .pick(1)
         )
     ).pick(1)
@@ -368,7 +322,7 @@ class RythmParser {
 
     blockBrace() => (
         char('{')
-        & NL
+        & string("\n").optional("")
         & (
             ref(dartComments)
             | ref(dartString)
@@ -393,19 +347,25 @@ class RythmParser {
     );
 
     defFuncDirective() => (
-        DEF
+        string("@def").trimRightInLine()
         & ref(name).trimInLine()
         & ref(paramListWithParenthesis).pick(1).trimInLine()
         & ref(blockTextWithRythmExpr)
     )
     .map((each) => new DefFuncDirective(each[1], each[2], each[3]));
 
-    breakKeyword() => BREAK.map((_) => new Break());
+    breakKeyword() => (
+        string("@break")
+        & word().not()
+    ).map((_) => new Break());
 
-    continueKeyword() => CONTINUE.map((_) => new Continue());
+    continueKeyword() => (
+        string("@continue")
+        & word().not()
+    ).map((_) => new Continue());
 
     verbatimDirective() => (
-        VERBATIM &
+        string("@verbatim") &
         (
             (
                 char('{').trimInLine()
@@ -415,20 +375,20 @@ class RythmParser {
                 )
                 & char('\n')
                 & char("}")
-                & NL
+                & string("\n").optional("")
             ).permute([2, 3])
             | (
                 char('{').trimLeftInLine()
                 & anyIn('\n}').neg().star()
                 & char('}')
-                & NL.optional()
+                & string("\n").optional("").optional()
             ).pick(1)
         )
     ).pick(1)
     .map((each) => new VerbatimDirective(_flatToStr(each)));
 
     getDirective() => (
-        GET.trimRightInLine()
+        string("@get").trimRightInLine()
         & (
             (
                 char('(').trimInLine()
@@ -442,18 +402,18 @@ class RythmParser {
     .map((each) => new GetDirective(_flatToStr(each).trim()));
 
     setDirective() => (
-        SET.trimInLine()
+        string("@set").trimInLine()
         & ref(namedArgItem)
-        & NL
+        & string("\n").optional("")
     ).pick(1)
     .map((each) => new SetDirective(each));
 
     includeDirective() => (
-        INCLUDE
+        string("@include")
         & (
             (
                 ref(relaxedName).trimInLine()
-                & NL
+                & string("\n").optional("")
             ).pick(0)
             |
             (
@@ -472,12 +432,22 @@ class RythmParser {
             & char("\n")
         ).optional()
         & (
-            ref(renderBody)
-            | ref(forDirective)
+            ref(atAt)
+            | ref(rythmComment)
+            | ref(renderDirective)
+            | ref(defFuncDirective)
+            | ref(renderBody)
+            | ref(getDirective)
+            | ref(setDirective)
+            | ref(includeDirective)
+            | ref(renderBody)
+            | ref(renderDirective)
+            | ref(callFuncWithBody)
             | ref(ifElseDirective)
-            | ref(breakKeyword)
-            | ref(continueKeyword)
+            | ref(forDirective)
             | ref(verbatimDirective)
+            | ref(dartCode)
+            | ref(dartExpr)
             | ref(rythmExpr)
             | char('}').neg()
         ).star()
