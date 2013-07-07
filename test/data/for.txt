@@ -1,11 +1,9 @@
+@for(var x in list) {@x}
 @for(var x in list) {
   @x
 }
 @for(var x in list) {
-  @x
-}
-@for(var x in list) {
-    @if(x>3) {
+    @for(var y in list) {
         @continue
     } else {
         @break
@@ -22,9 +20,7 @@
 Document(
   ForDirective(var x in list
     RythmBlock(
-      Plain(  )
       InvocationChain(x)
-      Plain(\n)
     )
   )
   ForDirective(var x in list
@@ -37,17 +33,15 @@ Document(
   ForDirective(var x in list
     RythmBlock(
       Plain(    )
-      IfElseDirective(
-        If(x>3
-          RythmBlock(
-            Plain(        )
-            Continue(continue)
-            Plain(\n    )
-          )
+      ForDirective(var y in list
+        RythmBlock(
+          Plain(        )
+          InvocationChain(continue)
+          Plain(\n    )
         )
         RythmBlock(
           Plain(        )
-          Break(break)
+          InvocationChain(break)
           Plain(\n    )
         )
       )
