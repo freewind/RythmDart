@@ -23,7 +23,7 @@ String _tab(int level) {
 void _fixString(Node node) {
     List<Node> nodes = [];
     StringBuffer sb = null;
-    for (final Node item in node.children) {
+    for (var item in node.children) {
 //        print("item: [$item]");
         if (item is String) {
             if (sb == null) {

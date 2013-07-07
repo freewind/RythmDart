@@ -206,13 +206,13 @@ class Name extends Node {
 }
 
 class ExtendsDirective extends Node {
-    String name;
+    Name name;
 
     List<NamedArg> get args => children;
 
     ExtendsDirective(this.name, List<NamedArg> args) {
         super.children = args;
-        super.content = "$name";
+        super.content = name.content;
     }
 
 }
@@ -224,7 +224,7 @@ class NamedArg extends Node {
 
     NamedArg(this.name, value) {
         this.children = value;
-        super.content = "${name.content}";
+        super.content = name.content;
     }
 }
 
