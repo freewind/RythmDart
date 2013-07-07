@@ -14,30 +14,30 @@
 
 Document(
   SetDirective(age
-    Plain(123)
+    PlainLine(123)
   )
   SetDirective(name
-    Plain("Freewind")
+    PlainLine("Freewind")
   )
   SetDirective(scripts
     RythmBlock(
-      Plain(    <script src="abc.js"></script>\n)
+      PlainLine(    <script src="abc.js"></script>)
     )
   )
   SetDirective(my_name
-    Plain("Freewind")
+    PlainLine("Freewind")
   )
   SetDirective(my-name
-    Plain("Freewind")
+    PlainLine("Freewind")
   )
   SetDirective(my.name
-    Plain("Freewind")
+    PlainLine("Freewind")
   )
   SetDirective(go
     RythmBlock(
       Plain(    Go )
       InvocationChain(name)
-      Plain( !!\n)
+      PlainLine( !!)
     )
   )
 )

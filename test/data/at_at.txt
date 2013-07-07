@@ -8,6 +8,8 @@ user@@test.com
 ------------------------
 
 Document(
-  Plain(@hello@\n<div>@abc</div>\nuser@test.com\n)
+  PlainLine(@hello@)
+  PlainLine(<div>@abc</div>)
+  PlainLine(user@test.com)
   VerbatimDirective(@@\n)
 )

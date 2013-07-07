@@ -27,7 +27,7 @@ Document(
     RythmBlock(
       Plain(  )
       InvocationChain(x)
-      Plain(\n)
+      PlainLine()
     )
   )
   ForDirective(var x in list
@@ -37,12 +37,14 @@ Document(
         RythmBlock(
           Plain(        )
           InvocationChain(continue)
-          Plain(\n    )
+          PlainLine()
+          PlainLine(    )
         )
         RythmBlock(
           Plain(        )
           InvocationChain(break)
-          Plain(\n    )
+          PlainLine()
+          PlainLine(    )
         )
       )
     )
@@ -51,12 +53,12 @@ Document(
     RythmBlock(
       Plain(  )
       InvocationChain(x)
-      Plain(\n)
+      PlainLine()
     )
     RythmBlock(
       Plain(  Hello, )
       InvocationChain(else)
-      Plain(\n)
+      PlainLine()
     )
   )
 )

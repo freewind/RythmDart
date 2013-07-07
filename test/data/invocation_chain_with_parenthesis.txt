@@ -16,5 +16,5 @@ Document(
   InvocationChain(abc())
   InvocationChain(abc(()=>{return "xx";}))
   InvocationChain(abc)
-  Plain(.go())
+  PlainLine(.go())
 )

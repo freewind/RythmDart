@@ -33,35 +33,35 @@ Document(
   RenderDirective(
     CallFuncWithBodyDirective(hello(aaa) withBody
       RythmBlock(
-        Plain( abc )
+        PlainLine( abc )
       )
     )
   )
   RenderDirective(
     CallFuncWithBodyDirective(hello("aaa") withBody ()
       RythmBlock(
-        Plain( abc )
+        PlainLine( abc )
       )
     )
   )
   RenderDirective(
     CallFuncWithBodyDirective(hello() withBody (a)
       RythmBlock(
-        Plain( abc )
+        PlainLine( abc )
       )
     )
   )
   RenderDirective(
     CallFuncWithBodyDirective(hello() withBody (a, b)
       RythmBlock(
-        Plain( abc )
+        PlainLine( abc )
       )
     )
   )
   RenderDirective(
     CallFuncWithBodyDirective(hello() withBody (a, b)
       RythmBlock(
-        Plain(  abc\n)
+        PlainLine(  abc)
       )
     )
   )
@@ -72,7 +72,7 @@ Document(
         InvocationChain(a)
         Plain(, )
         InvocationChain(b)
-        Plain(\n)
+        PlainLine()
       )
     )
   )

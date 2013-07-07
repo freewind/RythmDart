@@ -6,8 +6,8 @@
 
 Document(
   InvocationChain(renderBodyABC)
-  Plain(\n)
+  PlainLine()
   InvocationChain(breakABC)
-  Plain(\n)
+  PlainLine()
   InvocationChain(continueABC)
 )

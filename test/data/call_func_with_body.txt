@@ -19,27 +19,27 @@ Document(
   )
   CallFuncWithBodyDirective(hello(aaa) withBody
     RythmBlock(
-      Plain( abc )
+      PlainLine( abc )
     )
   )
   CallFuncWithBodyDirective(hello("aaa") withBody ()
     RythmBlock(
-      Plain( abc )
+      PlainLine( abc )
     )
   )
   CallFuncWithBodyDirective(hello() withBody (a)
     RythmBlock(
-      Plain( abc )
+      PlainLine( abc )
     )
   )
   CallFuncWithBodyDirective(hello() withBody (a, b)
     RythmBlock(
-      Plain( abc )
+      PlainLine( abc )
     )
   )
   CallFuncWithBodyDirective(hello() withBody (a, b)
     RythmBlock(
-      Plain(  abc\n)
+      PlainLine(  abc)
     )
   )
   CallFuncWithBodyDirective(hello() withBody (a, b)
@@ -48,7 +48,7 @@ Document(
       InvocationChain(a)
       Plain(, )
       InvocationChain(b)
-      Plain(\n)
+      PlainLine()
     )
   )
 )

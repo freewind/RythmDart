@@ -41,48 +41,48 @@ Document(
   IfElseDirective(
     If(aaa==bbb
       RythmBlock(
-        Plain(  111\n)
+        PlainLine(  111)
       )
     )
   )
   IfElseDirective(
     If(aaa==bbb
       RythmBlock(
-        Plain(  111\n)
+        PlainLine(  111)
       )
     )
     RythmBlock(
-      Plain(  222\n)
+      PlainLine(  222)
     )
   )
   IfElseDirective(
     If(aaa==bbb
       RythmBlock(
-        Plain(  111\n)
+        PlainLine(  111)
       )
     )
     If(ccc==ddd
       RythmBlock(
-        Plain(    222\n)
+        PlainLine(    222)
       )
     )
     RythmBlock(
-      Plain(  333\n)
+      PlainLine(  333)
     )
   )
   IfElseDirective(
     If(aaa=bbb
       RythmBlock(
-        Plain(  111\n)
+        PlainLine(  111)
       )
     )
     If(ccc==ddd
       RythmBlock(
-        Plain(  222\n)
+        PlainLine(  222)
       )
     )
     RythmBlock(
-      Plain(  333\n)
+      PlainLine(  333)
     )
   )
   IfElseDirective(
@@ -90,20 +90,20 @@ Document(
       RythmBlock(
         Plain(  111 )
         InvocationChain(aaa)
-        Plain(\n)
+        PlainLine()
       )
     )
     If(ccc==ddd
       RythmBlock(
         Plain(  222 )
         InvocationChain(bbb)
-        Plain(\n)
+        PlainLine()
       )
     )
     RythmBlock(
       Plain(  333 )
       InvocationChain(ccc)
-      Plain(\n)
+      PlainLine()
     )
   )
 )
