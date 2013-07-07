@@ -156,23 +156,28 @@ class RythmParser {
     });
 
     renderBody() => (
-        RENDER_BODY
+        string("@renderBody")
         & (
-            char('(')
-            & ref(name).trim().separatedBy(char(','), includeSeparators:false)
-            & char(')')
-        ).pick(1).optional()
+            (
+                char('(')
+                & ref(name).trim().separatedBy(char(','), includeSeparators:false).optional()
+                & char(')')
+            ).pick(1)
+            | word().not()
+        )
+        & string("\n").optional("")
     ).pick(1).map((each) => new RenderBody(each));
 
     renderDirective() => (
-        RENDER.trimRightInLine()
+        string("@render")
+        & whitespace().plus()
         &
         (
             ref(_callFuncWithBody)
             | ref(invocationChain)
         )
-        & NL
-    ).pick(1)
+        & string("\n").optional("")
+    ).pick(2)
     .map((each) {
         if (each is List) {
             return new RenderDirective(new InvocationChain(each));
