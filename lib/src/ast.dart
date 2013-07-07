@@ -14,7 +14,7 @@ class Node {
 
     bool get isLeaf => children.isEmpty;
 
-    void toCode(StringBuffer sb) => sb.write(content);
+    void toCode(CodeWriter sb) => sb.write(content);
 
     toString() => content;
 }
@@ -25,18 +25,9 @@ class Document extends Node {
         super.children = children;
     }
 
-    String toCode(StringBuffer sb) {
-        var sb = new StringBuffer();
-        sb.write('""');
+    String toCode(CodeWriter sb) {
         for (var child in children) {
-            if (child is String) {
-                sb.write('+"""');
-                sb.write(child);
-                sb.write('"""');
-            } else {
-                sb.write('+');
-                child.toCode(sb);
-            }
+            child.toCode(sb);
         }
         return sb.toString();
     }
@@ -49,6 +40,14 @@ class ImportDirective extends Node {
 
     ImportDirective(this.importPath, this.as) {
         super.content = importPath + (as == null ? '' : 'as $as');
+    }
+
+    void toCode(CodeWriter sb) {
+        if (as == null) {
+            sb.writeln("import $importPath;");
+        } else {
+            sb.writeln("import $importPath as $as;");
+        }
     }
 }
 
@@ -63,6 +62,19 @@ class IfElseDirective extends Node {
             super.children.add(elseClause);
         }
     }
+
+    void toCode(CodeWriter sb) {
+        for (int i = 0;i < ifs.length;i++) {
+            If ifClause = ifs[i];
+            if (i > 0) {
+                sb.write(" else ");
+            }
+            ifClause.toCode(sb);
+        }
+        if (!elseClause.isLeaf) {
+            elseClause.write(sb);
+        }
+    }
 }
 
 class If extends Node {
@@ -75,6 +87,11 @@ class If extends Node {
         super.content = this.condition;
         super.children = [body];
     }
+
+    void toCode(CodeWriter sb) {
+        sb.write("if ($condition) ");
+        body.toCode(sb);
+    }
 }
 
 
@@ -85,6 +102,15 @@ class FuncParams extends Node {
         super.content = args.map((a) => a.content).join(", ");
     }
 
+    void toCode(CodeWriter sb) {
+        for (int i = 0;i < args.length;i++) {
+            Param p = args[i];
+            if (i > 0) {
+                sb.write(", ");
+            }
+            p.toCode(sb);
+        }
+    }
 }
 
 class EntryParamsDirective extends FuncParams {
@@ -105,7 +131,6 @@ class InvocationChain extends Node {
 class DartCode extends Node {
 
     DartCode(String content) :super.withContent(content);
-
 }
 
 class DartEmbedExpr extends Node {
@@ -120,30 +145,21 @@ class Invocation extends Node {
     Invocation(value):super.withContent(value);
 }
 
+class PlainLine extends Plain {
+    PlainLine(String line): super(line);
+
+    void toCode(CodeWriter sb) {
+        sb.writeEscapedLn(content);
+    }
+}
+
 class Plain extends Node {
 
     Plain(String content):super.withContent(content);
 
-    String toCode(StringBuffer sb) {
-        if (!content.contains("\n")) {
-            if (!content.contains('"')) {
-                sb..write('"')..write(content)..write('"');
-                return sb.toString();
-            } else if (!content.contains("'")) {
-                sb..write("'")..write(content)..write("'");
-                return sb.toString();
-            }
-        }
-        if (!content.contains('"""')) {
-            sb..write('"""')..write(content)..write('"""');
-        } else if (!content.contains("'''")) {
-            sb..write("'''")..write(content)..write("'''");
-        } else {
-            sb..write('"""')..write(content.replaceAll('"""', r'\"""'))..write('"""');
-        }
-        return sb.toString();
+    String toCode(CodeWriter sb) {
+        sb.writeEscaped(content);
     }
-
 }
 
 
@@ -158,6 +174,13 @@ class DefFuncDirective extends Node {
         if (params == null) params = [];
         super.content = '${name.content}(${params.map((p) => p.content).join(", ")})';
         super.children = [body];
+    }
+
+    void toCode(CodeWriter sb) {
+        name.write("(");
+        super.toCode(sb);
+        name.write(")");
+        body.toCode(sb);
     }
 
 }
@@ -209,8 +232,15 @@ class RenderBody extends Node {
     List<Name> args;
 
     RenderBody(this.args) {
-        super.content = args == null ? "" : args.map((a) => a.content).join(", ");
+        super.content = names;
     }
+
+    get names => args == null ? "" : args.map((a) => a.content).join(", ");
+
+    void toCode(CodeWriter sb) {
+        sb.writeln("_renderBody(${names})");
+    }
+
 }
 
 class RenderDirective extends Node {

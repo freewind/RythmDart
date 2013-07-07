@@ -9,6 +9,7 @@ part "src/parsers.dart";
 part "src/parser.dart";
 part "src/ast.dart";
 part "src/compiler.dart";
+part "src/code_writer.dart";
 
 String _tab(int level) {
     var sb = new StringBuffer();
@@ -26,7 +27,11 @@ void _fixString(Node node) {
 //        print("item: [$item]");
         if (item is String) {
             if (sb == null) {
-                sb = new StringBuffer(item);
+                sb = new StringBuffer();
+            }
+            if (item == "\n") {
+                nodes.add(new PlainLine(sb.toString()));
+                sb = null;
             } else {
                 sb.write(item);
             }
@@ -40,7 +45,7 @@ void _fixString(Node node) {
         }
     }
     if (sb != null) {
-        nodes.add(new Plain(sb.toString()));
+        nodes.add(new PlainLine(sb.toString()));
     }
     node.children = nodes;
 }
@@ -83,6 +88,7 @@ _flatToStr(list) {
         }
     }
     handleNode(list);
-    return sb . toString();
+    return sb.toString();
 
 }
+

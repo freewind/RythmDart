@@ -1,0 +1,6 @@
+@import "dart:math" as math
+@extends layout
+@params String name, int age
+
+Hello, @name, you're @age
+
