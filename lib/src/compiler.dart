@@ -1,5 +1,77 @@
 part of rythm;
 
+String _filename(String path) {
+    return path.split("/").last.split(".").first;
+}
+
+
+class _Page {
+
+    String mainFuncName;
+
+    List<ImportDirective> imports;
+
+    ExtendsDirective extendsDirective;
+
+    EntryParamsDirective entryParams;
+
+    RenderBody renderBody;
+
+    List<Node> body;
+
+    _Page(Document doc, this.mainFuncName) {
+        this.imports = _removeNodes(doc, (node) => node is ImportDirective);
+        this.extendsDirective = _singleOrNone(_removeNodes(doc, (node) => node is ExtendsDirective));
+        this.entryParams = _singleOrNone(_removeNodes(doc, (node) => node is EntryParamsDirective));
+        this.renderBody = doc.children.firstWhere((node) => node is RenderBody, orElse: () => null);
+        this.body = doc.children;
+        if (this.extendsDirective != null) {
+            this.imports.add(new ImportDirective('"${extendsDirective.name.content}.dart"'));
+        }
+        if (this.renderBody != null) {
+            if (this.entryParams == null) {
+                this. entryParams = new EntryParamsDirective([]);
+            }
+            this.entryParams.args.add(new Param(new Name("String"), new Name("_renderBody(${renderBody.names})")));
+        }
+    }
+
+    String toCode() {
+        var cw = new CodeWriter();
+        for (var item in imports) {
+            item.toCode(cw);
+        }
+
+        cw.writeStmt("String ${mainFuncName} (");
+        if (this.entryParams != null) {
+            this.entryParams.toCode(cw);
+        }
+        cw.writeStmtLn(") {");
+
+        if (extendsDirective != null) {
+            cw.writeStmtLn("return ${extendsDirective.name.content}( () {");
+        }
+
+        cw.writeStmtLn("var ${cw.name} = new StringBuffer();");
+
+        for (var item in body) {
+            item.toCode(cw);
+        }
+
+        cw.writeStmtLn("return ${cw.name}.toString();");
+
+        if (extendsDirective != null) {
+            cw.writeStmtLn("});");
+        }
+
+
+        cw.writeStmtLn("}");
+        return cw.toString();
+    }
+
+}
+
+
 class Compiler {
     String compile(File file) {
         var parser = new RythmParser();
@@ -9,101 +81,13 @@ class Compiler {
         var result = parser.start().parse(content);
         if (result is Success) {
             var document = result.value;
-            print("### print tree");
             printTree(document);
-            print("### print tree end");
-            return _compile(file, document);
+            _Page page = new _Page(document, _filename(file.path));
+            return page.toCode();
         } else {
             return "failed!!!";
         }
     }
-}
-
-String _compile(File file, Document doc) {
-    String filename(String path) {
-        return path.split("/").last.split(".").first;
-    }
-
-    var sb = new CodeWriter("xxx");
-
-// import
-    var list = _removeNodes(doc, (node) => node is ImportDirective);
-    for (var item in list) {
-        sb.usePrefix = false;
-        item.toCode(sb);
-    }
-
-// direct @renderBody
-    RenderBody renderBodyDirective = doc.children.firstWhere((node) => node is RenderBody, orElse: () => null);
-
-// extends
-    list = _removeNodes(doc, (node) => node is ExtendsDirective);
-    print("#### ExtendsDirective list: $list, list.length: ${list.length}");
-    ExtendsDirective extendsDirective = null;
-
-    if (list.length == 1) {
-        extendsDirective = list[0];
-        sb.writeln('import "${extendsDirective.name}.dart";');
-    } else if (list.length > 1) {
-        throw new Exception("found more than 1 extendsDirective");
-    }
-
-// entryParamsDirective
-    list = _removeNodes(doc, (node) => node is EntryParamsDirective);
-    print("#### EntryParamsDirective list: $list, list.length: ${list.length}");
-    EntryParamsDirective entryParamsDirective = null;
-    if (list.length > 1) {
-        throw new Exception("Can't have more than one EntryParamsDirective in a template: " + list.length);
-    } else if (list.length == 1) {
-        entryParamsDirective = list[0];
-    }
-
-    sb.usePrefix = false;
-    sb.write("String ${filename(file.path)} (");
-    print("### entryParamsDirective: $entryParamsDirective");
-    if (entryParamsDirective != null) {
-        entryParamsDirective.toCode(sb);
-    }
-    if (entryParamsDirective != null && renderBodyDirective != null) {
-        sb.write(", ");
-    }
-    if (renderBodyDirective != null) {
-        sb.write("String _renderBody(${renderBodyDirective.names})");
-    }
-    sb.writeln(") {");
-
-    if(extendsDirective!=null) {
-        sb.writeln("return ${extendsDirective.name}( () {");
-    }
-
-    // content this current page
-    sb.writeln("var ${sb.name} = new StringBuffer();");
-    sb.usePrefix = true;
-    doc.toCode(sb);
-    sb.usePrefix = false;
-    sb.writeln("return ${sb.name}.toString();");
-
-    if(extendsDirective!=null) {
-        sb.writeln("});");
-    }
-
-
-    sb.writeln("}");
-
-    return sb.toString();
-
-
-//    var temp = """
-//    import "dart:isolate";
-//    String ${filename(file.path)}(${params()}) {
-//        return ${doc.toCode(new StringBuffer())};
-//    }
-//
-//    main() {
-//      port.receive((msg, reply) => reply.send(${filename(file.path)}(msg[0], msg[1])));
-//    }
-//  """;
-//    return temp;
 }
 
 List<Node> _removeNodes(Document doc, bool test(Node)) {
@@ -134,3 +118,11 @@ List<Node> _removeNodes(Document doc, bool test(Node)) {
 
     return matched;
 }
+
+_singleOrNone(List<Node> nodes) {
+    if (nodes.length > 1) {
+        throw new Exception("The list of ${nodes.first.runtimeType} should have size of 0 or 1, but get: ${nodes.length}");
+    }
+    return nodes.isEmpty ? null : nodes.first;
+}
+

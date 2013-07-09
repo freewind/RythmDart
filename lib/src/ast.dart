@@ -2,6 +2,7 @@ part of rythm;
 
 
 class Node {
+
     String content = "";
 
     List<Node> children = [];
@@ -14,9 +15,9 @@ class Node {
 
     bool get isLeaf => children.isEmpty;
 
-    void toCode(CodeWriter sb) => sb.write(content);
+    void toCode(CodeWriter cw) => cw.writeExprLn(content);
 
-    toString() => content;
+    toString() => "${this.runtimeType}: $content";
 }
 
 class Document extends Node {
@@ -25,11 +26,10 @@ class Document extends Node {
         super.children = children;
     }
 
-    String toCode(CodeWriter sb) {
+    void toCode(CodeWriter cw) {
         for (var child in children) {
-            child.toCode(sb);
+            child.toCode(cw);
         }
-        return sb.toString();
     }
 }
 
@@ -38,15 +38,15 @@ class ImportDirective extends Node {
 
     String as;
 
-    ImportDirective(this.importPath, this.as) {
+    ImportDirective(this.importPath, [this.as=null]) {
         super.content = importPath + (as == null ? '' : 'as $as');
     }
 
-    void toCode(CodeWriter sb) {
+    void toCode(CodeWriter cw) {
         if (as == null) {
-            sb.writeln("import $importPath;");
+            cw.writeStmtLn("import $importPath;");
         } else {
-            sb.writeln("import $importPath as $as;");
+            cw.writeStmtLn("import $importPath as $as;");
         }
     }
 }
@@ -63,16 +63,16 @@ class IfElseDirective extends Node {
         }
     }
 
-    void toCode(CodeWriter sb) {
+    void toCode(CodeWriter cw) {
         for (int i = 0;i < ifs.length;i++) {
             If ifClause = ifs[i];
             if (i > 0) {
-                sb.write(" else ");
+                cw.writeStmt(" else ");
             }
-            ifClause.toCode(sb);
+            ifClause.toCode(cw);
         }
         if (!elseClause.isLeaf) {
-            elseClause.write(sb);
+            elseClause.toCode(cw);
         }
     }
 }
@@ -88,9 +88,10 @@ class If extends Node {
         super.children = [body];
     }
 
-    void toCode(CodeWriter sb) {
-        sb.write("if ($condition) ");
-        body.toCode(sb);
+    void toCode(CodeWriter cw) {
+        cw.writeStmtLn("if ($condition) {");
+        body.toCode(cw);
+        cw.writeStmtLn("}");
     }
 }
 
@@ -102,13 +103,13 @@ class FuncParams extends Node {
         super.content = args.map((a) => a.content).join(", ");
     }
 
-    void toCode(CodeWriter sb) {
+    void toCode(CodeWriter cw) {
         for (int i = 0;i < args.length;i++) {
             Param p = args[i];
             if (i > 0) {
-                sb.write(", ");
+                cw.writeStmt(", ");
             }
-            p.toCode(sb);
+            p.toCode(cw);
         }
     }
 }
@@ -125,6 +126,11 @@ class InvocationChain extends Node {
     InvocationChain(this.invocations) {
         super.content = invocations.map((i) => i.content).join(".");
     }
+
+    void toCode(CodeWriter cw) {
+        cw.writeExpr(content);
+    }
+
 }
 
 
@@ -148,8 +154,8 @@ class Invocation extends Node {
 class PlainLine extends Plain {
     PlainLine(String line): super(line);
 
-    void toCode(CodeWriter sb) {
-        sb.writeEscapedLn(content);
+    void toCode(CodeWriter cw) {
+        cw.writeStrLn(content);
     }
 }
 
@@ -157,8 +163,8 @@ class Plain extends Node {
 
     Plain(String content):super.withContent(content);
 
-    String toCode(CodeWriter sb) {
-        sb.writeEscaped(content);
+    void toCode(CodeWriter cw) {
+        cw.writeStr(content);
     }
 }
 
@@ -174,13 +180,6 @@ class DefFuncDirective extends Node {
         if (params == null) params = [];
         super.content = '${name.content}(${params.map((p) => p.content).join(", ")})';
         super.children = [body];
-    }
-
-    void toCode(CodeWriter sb) {
-        name.write("(");
-        super.toCode(sb);
-        name.write(")");
-        body.toCode(sb);
     }
 
 }
@@ -237,8 +236,8 @@ class RenderBody extends Node {
 
     get names => args == null ? "" : args.map((a) => a.content).join(", ");
 
-    void toCode(CodeWriter sb) {
-        sb.writeln("_renderBody(${names})");
+    void toCode(CodeWriter cw) {
+        cw.writeExprLn("_renderBody(${names})");
     }
 
 }
@@ -256,6 +255,10 @@ class Param extends Node {
 
     Param(this.type, this.name) {
         super.content = '${type.content} ${name.content}';
+    }
+
+    void toCode(CodeWriter cw) {
+        cw.writeStmt(content);
     }
 }
 
@@ -279,6 +282,26 @@ class ForDirective extends Node {
             super.children.add(elseClause);
         }
     }
+
+    void toCode(CodeWriter cw) {
+        var flagName = _nextVarName();
+        if (elseClause != null) {
+            cw.writeStmtLn("var $flagName = false;");
+        }
+        cw.writeStmtLn("for ($content) {");
+        if (elseClause != null) {
+            cw.writeStmtLn("$flagName = true;");
+        }
+        body.toCode(cw);
+        cw.writeStmtLn("}");
+
+        if (elseClause != null) {
+            cw.writeStmtLn("if($flagName) {");
+            elseClause.toCode(cw);
+            cw.writeStmtLn("}");
+        }
+    }
+
 }
 
 class RythmBlock extends Node {
@@ -290,6 +313,12 @@ class RythmBlock extends Node {
     }
 
     RythmBlock.empty(): this(null);
+
+    void toCode(CodeWriter cw) {
+        for (var child in children) {
+            child.toCode(cw);
+        }
+    }
 }
 
 class SetDirective extends NamedArg {
@@ -306,10 +335,18 @@ class GetDirective extends Node {
 
 class Break extends Node {
     Break():super.withContent("break");
+
+    void toCode(CodeWriter cw) {
+        cw.writeStmtLn("break;");
+    }
 }
 
 class Continue extends Node {
     Continue() : super.withContent("continue");
+
+    void toCode(CodeWriter cw) {
+        cw.writeStmtLn("continue;");
+    }
 }
 
 class VerbatimDirective extends Node {

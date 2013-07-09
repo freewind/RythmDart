@@ -1,0 +1,9 @@
+@params List list
+
+<div>
+@for(var item in list) {
+
+  <span>@item</span>
+
+}
+</div>

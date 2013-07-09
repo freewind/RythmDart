@@ -4,55 +4,44 @@ class CodeWriter {
 
     String name;
 
-    bool usePrefix = false;
-
     final StringBuffer sb = new StringBuffer();
 
-    CodeWriter(this.name) ;
+    CodeWriter([this.name = "sb"]) ;
 
-    void writeln([String line = ""]) {
-        if (usePrefix) {
-            sb.write(name);
-            sb.write('.writeln ( ');
-            sb.write(line);
-            sb.writeln(');');
-        } else {
-            sb.writeln(line);
-        }
+    void writeStmt(String stmt) {
+        sb.write(stmt);
     }
 
-    void write(String str) {
-        if (usePrefix) {
-            sb.write(name);
-            sb.write('.write   ( ');
-            sb.write(str);
-            sb.writeln(');');
-        } else {
-            sb.write(str);
-        }
+    void writeStmtLn(String stmt) {
+        sb.writeln(stmt);
     }
 
-    void writeEscaped(String str) {
-        if (usePrefix) {
-            sb.write(name);
-            sb.write('.write    (r');
-            sb.write(_escape(str));
-            sb.writeln(');');
-        } else {
-            sb.writeln(_escape(str));
-        }
-
+    void writeExprLn(String expr) {
+        sb.write(name);
+        sb.write('.writeln ( ');
+        sb.write(expr);
+        sb.writeln(');');
     }
 
-    void writeEscapedLn(String str) {
-        if (usePrefix) {
-            sb.write(name);
-            sb.write('.writeln (r');
-            sb.write(_escape(str));
-            sb.writeln(');');
-        } else {
-            sb.writeln(_escape(str));
-        }
+    void writeExpr(String expr) {
+        sb.write(name);
+        sb.write('.write   ( ');
+        sb.write(expr);
+        sb.writeln(');');
+    }
+
+    void writeStr(String str) {
+        sb.write(name);
+        sb.write('.write    (r');
+        sb.write(_escape(str));
+        sb.writeln(');');
+    }
+
+    void writeStrLn(String str) {
+        sb.write(name);
+        sb.write('.writeln (r');
+        sb.write(_escape(str));
+        sb.writeln(');');
     }
 
     toString() => sb.toString();
