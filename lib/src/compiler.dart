@@ -25,9 +25,6 @@ class _Page {
         this.entryParams = _singleOrNone(_removeNodes(doc, (node) => node is EntryParamsDirective));
         this.renderBody = doc.children.firstWhere((node) => node is RenderBody, orElse: () => null);
         this.body = doc.children;
-        if (this.extendsDirective != null) {
-            this.imports.add(new ImportDirective('"${extendsDirective.name.content}.dart"'));
-        }
         if (this.renderBody != null) {
             if (this.entryParams == null) {
                 this. entryParams = new EntryParamsDirective([]);
@@ -38,6 +35,9 @@ class _Page {
 
     String toCode() {
         var cw = new CodeWriter();
+
+        cw.writeStmtLn("part of views;");
+
         for (var item in imports) {
             item.toCode(cw);
         }

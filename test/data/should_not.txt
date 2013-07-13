@@ -1,6 +1,10 @@
 @renderBodyABC
 @breakABC
 @continueABC
+function testJs() {
+    var $form = $('form');
+    $form.find(":hidden");
+}
 
 ----------------------------------------
 
@@ -10,4 +14,9 @@ Document(
   InvocationChain(breakABC)
   PlainLine()
   InvocationChain(continueABC)
+  PlainLine()
+  PlainLine(function testJs() {)
+  PlainLine(    var $form = $('form');)
+  PlainLine(    $form.find(":hidden");)
+  PlainLine(})
 )
