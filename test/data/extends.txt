@@ -13,6 +13,8 @@
 }, foot = {
   this is @the foot
 })
+@extends ./main
+@extends ../aaa/bbb
 
 
 ----------------------------------------
@@ -69,4 +71,6 @@ Document(
       )
     )
   )
+  ExtendsDirective(./main)
+  ExtendsDirective(../aaa/bbb)
 )

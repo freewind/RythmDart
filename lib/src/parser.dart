@@ -4,6 +4,8 @@ class RythmParser {
 
     html() => any();
 
+    path() => (word() | char('.') | char('/')).plus().flatten().map((each) => new Name(each));
+
     name() => word().plus().flatten()
     .map((each) => new Name(each));
 
@@ -89,7 +91,7 @@ class RythmParser {
 
     extendsDirective() => (
         string("@extends").trimInLine()
-        & ref(name).trim()
+        & ref(path).trim()
         & (
             char('(')
             & ref(namedArgItem).separatedBy(char(',').trim(), includeSeparators: false)
