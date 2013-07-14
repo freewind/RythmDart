@@ -10,3 +10,4 @@ dependencies:
 # persistent: any
   hop:
     git: https://github.com/kevmoo/hop.dart.git
+  pathos: any
