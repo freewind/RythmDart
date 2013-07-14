@@ -33,10 +33,13 @@ class _Page {
         }
     }
 
-    String toCode() {
+    String toCode(String rootLib, String libSep, List<String> relatives) {
         var cw = new CodeWriter();
 
-        cw.writeStmtLn("part of views;");
+        var currDirItems = [rootLib];
+        currDirItems.addAll(relatives.where((i) => i != "."));
+
+        cw.writeStmtLn("part of ${currDirItems.join('.')};");
 
         for (var item in imports) {
             item.toCode(cw);
@@ -49,7 +52,25 @@ class _Page {
         cw.writeStmtLn(") {");
 
         if (extendsDirective != null) {
-            cw.writeStmtLn("return ${extendsDirective.name.content}( () {");
+            List<String> extendItems = path.split(extendsDirective.name.content);
+            var funcName = extendItems.last;
+
+            var refItems = [];
+            if (extendItems.first.startsWith('.')) {
+                refItems.addAll(currDirItems);
+                refItems.addAll(extendItems);
+            } else {
+                refItems.add(rootLib);
+                refItems.addAll(extendItems);
+            }
+            refItems = path.split(path.normalize(path.joinAll(refItems)));
+            refItems.removeLast();
+
+            if (currDirItems.join(',') == refItems.join(',')) {
+                cw.writeStmtLn("return $funcName( () {");
+            } else {
+                cw.writeStmtLn("return ${refItems.join(libSep)}.$funcName( () {");
+            }
         }
 
         cw.writeStmtLn("var ${cw.name} = new StringBuffer();");
@@ -64,7 +85,6 @@ class _Page {
             cw.writeStmtLn("});");
         }
 
-
         cw.writeStmtLn("}");
         return cw.toString();
     }
@@ -73,7 +93,7 @@ class _Page {
 
 
 class Compiler {
-    String compile(File file) {
+    String compile(File file, String rootLib, String libSep, List<String> relatives) {
         var parser = new RythmParser();
         var content = file.readAsStringSync();
         print("content: $content");
@@ -83,7 +103,7 @@ class Compiler {
             var document = result.value;
             printTree(document);
             _Page page = new _Page(document, _filename(file.path));
-            return page.toCode();
+            return page.toCode(rootLib, libSep, relatives);
         } else {
             return "failed!!!";
         }
