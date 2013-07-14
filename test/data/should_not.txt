@@ -5,6 +5,7 @@ function testJs() {
     var $form = $('form');
     $form.find(":hidden");
 }
+<a href="aboutme">@@me</a>
 
 ----------------------------------------
 
@@ -19,4 +20,5 @@ Document(
   PlainLine(    var $form = $('form');)
   PlainLine(    $form.find(":hidden");)
   PlainLine(})
+  PlainLine(<a href="aboutme">@me</a>)
 )
