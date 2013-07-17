@@ -32,14 +32,14 @@ class CodeWriter {
 
     void writeStr(String str) {
         sb.write(name);
-        sb.write('.write    (r');
+        sb.write('.write    (');
         sb.write(_escape(str));
         sb.writeln(');');
     }
 
     void writeStrLn(String str) {
         sb.write(name);
-        sb.write('.writeln (r');
+        sb.write('.writeln (');
         sb.write(_escape(str));
         sb.writeln(');');
     }
@@ -47,13 +47,7 @@ class CodeWriter {
     toString() => sb.toString();
 
     String _escape(String str) {
-        if (!str.contains('"')) {
-            return '"' + str + '"';
-        } else if (!str.contains("'")) {
-            return "'" + str + "'";
-        } else {
-            return "'" + str.replaceAll(new RegExp("'"), r"\'") + "'";
-        }
+        return "'" + str.replaceAll(new RegExp(r"[$]"), r"\$").replaceAll(new RegExp("'"), r"\'") + "'";
     }
 
 }
