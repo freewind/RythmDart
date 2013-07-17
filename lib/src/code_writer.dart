@@ -52,7 +52,7 @@ class CodeWriter {
         } else if (!str.contains("'")) {
             return "'" + str + "'";
         } else {
-            return "'" + str.replaceAll("'", "\'") + "'";
+            return "'" + str.replaceAll(new RegExp("'"), r"\'") + "'";
         }
     }
 
