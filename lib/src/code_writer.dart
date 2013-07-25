@@ -47,7 +47,10 @@ class CodeWriter {
     toString() => sb.toString();
 
     String _escape(String str) {
-        return "'" + str.replaceAll(new RegExp(r"[$]"), r"\$").replaceAll(new RegExp("'"), r"\'") + "'";
+        return "'" + str.replaceAll(new RegExp(r"\\"), r"\\")
+        .replaceAll(new RegExp(r"[$]"), r"\$")
+        .replaceAll(new RegExp("'"), r"\'")
+        + "'";
     }
 
 }

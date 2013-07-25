@@ -25,7 +25,6 @@ main() {
         });
     }
 
-
     testFile("entry_params.txt");
     testFile("invocation_chain.txt");
     testFile("invocation_chain_with_parenthesis.txt");
@@ -46,5 +45,6 @@ main() {
     testFile("render.txt");
     testFile("at_at.txt");
     testFile("renderBody.txt");
+    testFile("plain.txt");
     testFile("should_not.txt");
 }

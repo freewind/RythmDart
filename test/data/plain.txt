@@ -1,0 +1,7 @@
+var reg = /hello/;
+
+-------------------------
+
+Document(
+  PlainLine(var reg = /hello/;)
+)
