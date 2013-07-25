@@ -71,7 +71,7 @@ class IfElseDirective extends Node {
             }
             ifClause.toCode(cw);
         }
-        if (!elseClause.isLeaf) {
+        if (elseClause!=null && !elseClause.isLeaf) {
             elseClause.toCode(cw);
         }
     }
@@ -288,11 +288,21 @@ class ForDirective extends Node {
         if (elseClause != null) {
             cw.writeStmtLn("var $flagName = false;");
         }
+        var itemName = varName.content;
+        var index = _nextVarName();
+        cw.writeStmtLn("var $index = 0;");
         cw.writeStmtLn("for ($content) {");
+        cw.writeStmtLn("var ${itemName}_index = $index;");
+        cw.writeStmtLn("var ${itemName}_isFirst = $index == 0;");
+        cw.writeStmtLn("var ${itemName}_isLast = $index == ${list}.length-1;");
+        cw.writeStmtLn("var ${itemName}_isOdd = $index%2==1;");
+        cw.writeStmtLn("var ${itemName}_isEven = $index%2==0;");
+
         if (elseClause != null) {
             cw.writeStmtLn("$flagName = true;");
         }
         body.toCode(cw);
+        cw.writeStmtLn("$index += 1;");
         cw.writeStmtLn("}");
 
         if (elseClause != null) {
