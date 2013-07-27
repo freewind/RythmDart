@@ -71,7 +71,7 @@ class IfElseDirective extends Node {
             }
             ifClause.toCode(cw);
         }
-        if (elseClause!=null && !elseClause.isLeaf) {
+        if (elseClause != null && !elseClause.isLeaf) {
             elseClause.toCode(cw);
         }
     }
@@ -128,7 +128,10 @@ class InvocationChain extends Node {
     }
 
     void toCode(CodeWriter cw) {
+        cw.writeStmtLn("try {");
         cw.writeExpr(content);
+        cw.writeStmtLn("} catch(e) {");
+        cw.writeStmtLn("}");
     }
 
 }
