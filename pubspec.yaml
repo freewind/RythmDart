@@ -3,11 +3,6 @@ version: 0.1.0
 dependencies:
   unittest: any
   petitparser:
-#    git: git://github.com/freewind/PetitParserDart.git
-    path: /Users/freewind/dev/github/PetitParserDart
-#  uuid: any
-#  parsers: any
-# persistent: any
-  hop:
-    git: https://github.com/kevmoo/hop.dart.git
+    git: https://github.com/freewind/PetitParserDart.git
+#    path: /Users/freewind/dev/github/PetitParserDart
   pathos: any
