@@ -5,6 +5,7 @@
 @(abc())
 @(abc(()=>{return "xx";}))
 @(abc).go()
+@(abc["ddd"])
 
 ------------------------------------------------------------------
 
@@ -17,4 +18,5 @@ Document(
   InvocationChain(abc(()=>{return "xx";}))
   InvocationChain(abc)
   PlainLine(.go())
+  InvocationChain(abc["ddd"])
 )

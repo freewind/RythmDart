@@ -173,7 +173,10 @@ class RythmParser {
 
     invocationItem() => (
         ref(name)
-        & ref(blockParenthesis).optional("")
+        & (
+            ref(blockParenthesis)
+            | ref(blockSquareBrackets)
+        ).optional("")
     )
     .map((each) => new Invocation(_flatToStr(each)));
 
@@ -320,6 +323,15 @@ class RythmParser {
         | ref(blockBrace)
         | char(')').neg()
     ).star() & char(')') ;
+
+    blockSquareBrackets() => char('[') & (
+        ref(dartComments)
+        | ref(dartString)
+        | ref(blockParenthesis)
+        | ref(blockBrace)
+        | char(']').neg()
+    ).star() & char(']') ;
+
 
     blockBrace() => (
         char('{')

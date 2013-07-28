@@ -140,6 +140,10 @@ class InvocationChain extends Node {
 class DartCode extends Node {
 
     DartCode(String content) :super.withContent(content);
+
+    void toCode(CodeWriter cw) {
+        cw.writeStmtLn(content);
+    }
 }
 
 class DartEmbedExpr extends Node {
